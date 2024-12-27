@@ -1,0 +1,28 @@
+{
+  "name": "projects-backend",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^3.12.1",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2"
+  }
+}
