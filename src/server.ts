@@ -7,6 +7,7 @@ import helmet from '@fastify/helmet'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
+import api from './routes/api.js';
 
 // load env variables
 config()
@@ -26,37 +27,25 @@ const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
   = fastify({ logger: env.ENV === 'dev' ? devLogger : true }).withTypeProvider<JsonSchemaToTsProvider>()
 
 await server.register(helmet, { global: true })
-
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, '../'),
   dev: argv.includes('--dev'),
   spa: true,
 })
 
+// all /api routes
+await server.register(api)
+
 server.get('/app', (req, reply) => {
   return reply.html()
 })
+server.get('/app/*', (req, reply) => {
+  return reply.html()
+})
 
-server.get('/api', {
-  schema: {
-    response: {
-      default: {
-        type: 'object',
-        properties: {
-          error: {
-            type: 'string',
-            default: null,
-          },
-          data: {
-            type: 'string',
-            default: null,
-          },
-        },
-      },
-    },
-  },
-}, (request: FastifyRequest, reply: FastifyReply) => {
-  reply.code(200).send({ data: 'Hello World!', error: null })
+// redirect all other routes to /app
+server.get('*', (request: FastifyRequest, reply: FastifyReply) => {
+  reply.redirect('/app', 302)
 })
 
 await server.vite.ready()

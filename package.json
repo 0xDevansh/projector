@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@fastify/helmet": "^13.0.0",
-    "@fastify/react": "^0.6.0",
     "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
     "@fastify/vite": "^8.0.0-alpha.2",
     "@types/express": "^5.0.0",
@@ -29,7 +28,8 @@
     "helmet": "^8.0.0",
     "pino-pretty": "^13.0.0",
     "react": "^19",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router": "^7.1.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.1",
