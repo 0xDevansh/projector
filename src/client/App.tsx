@@ -4,20 +4,25 @@ import { Home } from './pages/Home.js';
 import AppLayout from './layouts/AppLayout.js';
 import { About } from './pages/About.js';
 import NotFound from './pages/NotFound.js';
+import { Login } from './pages/Login.js';
+import { AuthProvider, UserData } from './AuthContext.js';
 
 
-export function createApp () {
+export function createApp (isLoggedIn: boolean, user?: UserData) {
   return (
     <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          <Route path='app' element={<AppLayout />} >
-            <Route index element={<Home />} />
-            <Route path='about' element={<About />} />
-            <Route path='*' element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider initialIsLoggedIn={isLoggedIn} initialUser={user}>
+        <BrowserRouter>
+          <Routes>
+            <Route path='app' element={<AppLayout />} >
+              <Route index element={<Home />} />
+              <Route path='about' element={<About />} />
+              <Route path='login' element={<Login />} />
+              <Route path='*' element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </React.StrictMode>
   )
 }

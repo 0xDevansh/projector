@@ -1,4 +1,3 @@
-import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
@@ -7,7 +6,9 @@ import helmet from '@fastify/helmet'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
-import api from './routes/api.js';
+import api from './routes/api.js'
+import cookie from '@fastify/cookie'
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
 // load env variables
 config()
@@ -24,9 +25,15 @@ const devLogger = {
 
 // setup server, add middleware
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
-  = fastify({ logger: env.ENV === 'dev' ? devLogger : true }).withTypeProvider<JsonSchemaToTsProvider>()
+  = fastify({ logger: env.ENV === 'dev' ? devLogger : true }).withTypeProvider<TypeBoxTypeProvider>()
 
 await server.register(helmet, { global: true })
+await server.register(cookie, {
+  secret: env.COOKIE_SECRET,
+  parseOptions: {
+    httpOnly: true,
+  }
+})
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, '../'),
   dev: argv.includes('--dev'),
@@ -51,7 +58,7 @@ server.get('*', (request: FastifyRequest, reply: FastifyReply) => {
 await server.vite.ready()
 
 // Run the server!
-server.listen({ port: Number.parseInt(env.PORT || '8080') }, (err, _address) => {
+server.listen({ port: Number.parseInt(env.PORT || '8080'), host: '127.0.0.1' }, (err, _address) => {
   if (err) {
     server.log.error(err)
     exit(1)

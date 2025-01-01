@@ -6,7 +6,7 @@ export default {
   root: join(import.meta.dirname, 'src/client'),
   base: '/app',
   plugins: [
-    viteReact({ jsxRuntime: "classic" }),
+    viteReact({ jsxRuntime: 'automatic' }),
     viteFastifyReact(),
   ],
   build: {
