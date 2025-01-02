@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
@@ -9,9 +10,14 @@ import { fastify } from 'fastify'
 import api from './routes/api.js'
 import cookie from '@fastify/cookie'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { DataSource } from 'typeorm';
+import { initDatabase } from './database.js';
 
 // load env variables
 config()
+
+// set up TypeORM
+await initDatabase()
 
 const devLogger = {
   transport: {
