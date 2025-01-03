@@ -33,7 +33,7 @@ const devLogger = {
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
   = fastify({ logger: env.ENV === 'dev' ? devLogger : true }).withTypeProvider<TypeBoxTypeProvider>()
 
-await server.register(helmet, { global: true })
+await server.register(helmet, { global: true, contentSecurityPolicy: false })
 await server.register(cookie, {
   secret: env.COOKIE_SECRET,
   parseOptions: {
