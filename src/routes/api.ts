@@ -128,6 +128,12 @@ const api = async (server: FastifyInstance) => {
       }
 
   })
+
+  server.get('/api/logout', async(request: FastifyRequest, reply: FastifyReply) => {
+    // set cookie token with expiry date of now
+    reply.cookie('token', '', { expires: new Date() })
+    reply.redirect('/app')
+  })
 }
 
 export default api
