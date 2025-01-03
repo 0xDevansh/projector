@@ -1,5 +1,4 @@
 import { Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { Student } from './Student.js';
 
 @Entity()
 export class User {
@@ -17,7 +16,4 @@ export class User {
 
   @Column()
   deptCode: string
-
-  @OneToOne(() => Student, (student) => student.user)
-  student: Student
 }

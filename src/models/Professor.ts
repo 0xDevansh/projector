@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedCo
 import { User } from './User.js';
 
 @Entity()
-export class Student {
+export class Professor {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -10,19 +10,10 @@ export class Student {
   email: string
 
   @Column()
-  kerberos: string
+  username: string
 
   @Column('text', { nullable: true })
-  bio: string
-
-  @Column()
-  degree: string
-
-  @Column({ nullable: true })
-  cgpa: string
-
-  @Column({ nullable: true })
-  resumePath: string
+  areasOfResearch: string // 'student' | 'prof'
 
   @OneToOne(() => User)
   @JoinColumn()
