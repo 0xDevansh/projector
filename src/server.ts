@@ -10,7 +10,6 @@ import { fastify } from 'fastify'
 import api from './routes/api.js'
 import cookie from '@fastify/cookie'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { DataSource } from 'typeorm';
 import { initDatabase } from './database.js';
 
 // load env variables
@@ -31,7 +30,7 @@ const devLogger = {
 
 // setup server, add middleware
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
-  = fastify({ logger: env.ENV === 'dev' ? devLogger : true }).withTypeProvider<TypeBoxTypeProvider>()
+  = fastify({ logger: env.ENV === 'dev' ? devLogger: false }).withTypeProvider<TypeBoxTypeProvider>()
 
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
 await server.register(cookie, {

@@ -1,27 +1,23 @@
 import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
-export type UserData = {
+export type OauthUserData = {
   email: string
   name: string
-  hostel: string
-  mobileNo: string,
-  dateOfBirth: string,
-  instagramId: string,
 }
 
 type AuthCtx = {
   isLoggedIn: boolean,
-  user: UserData | undefined,
+  user: OauthUserData | undefined,
   reloadAuth: () => void,
 }
 
 const AuthContext = createContext<AuthCtx | undefined>(undefined);
 
-const AuthProvider = ({children, initialIsLoggedIn, initialUser}: {children: any, initialIsLoggedIn: boolean, initialUser?: UserData}) => {
+const AuthProvider = ({children, initialIsLoggedIn, initialUser}: {children: any, initialIsLoggedIn: boolean, initialUser?: OauthUserData}) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initialIsLoggedIn)
 
-  const [user, setUser] = useState<UserData|undefined>(initialUser)
+  const [user, setUser] = useState<OauthUserData|undefined>(initialUser)
 
   const reloadAuth = async () => {
     // query api to check cookie

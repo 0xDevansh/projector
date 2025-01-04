@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { env } from 'node:process'
 import { JWT } from 'node-jsonwebtoken'
 import axios from 'axios'
-import { UserData } from '../client/AuthContext.js';
+import { OauthUserData } from '../client/AuthContext.js';
 
 
 const api = async (server: FastifyInstance) => {
@@ -46,7 +46,7 @@ const api = async (server: FastifyInstance) => {
     if (!env.JWT_SECRET) {
       throw new Error('JWT secret not found in env')
     }
-    const jwtUser = new JWT<UserData>(env.JWT_SECRET)
+    const jwtUser = new JWT<OauthUserData>(env.JWT_SECRET)
       const { code, state } = request.query as CallbackQuery
     if (!code || !state) {
         reply.code(400).send({ error: 'code or state is missing' })
@@ -73,13 +73,10 @@ const api = async (server: FastifyInstance) => {
       })
 
       if (response.status === 200) {
+        // console.log('==========================\n', response.data);
         const token = await jwtUser.sign({
           email: response.data.user.email,
           name: response.data.user.name,
-          hostel: response.data.user.hostel,
-          mobileNo: response.data.user.mobileNo,
-          dateOfBirth: response.data.user.dateOfBirth,
-          instagramId: response.data.user.instagramId,
         }, {
           expiresIn: env.JWT_EXPIRES,
         })
@@ -114,7 +111,7 @@ const api = async (server: FastifyInstance) => {
     if (!env.JWT_SECRET) {
       throw new Error('JWT secret not found in env')
     }
-    const jwtUser = new JWT<UserData>(env.JWT_SECRET)
+    const jwtUser = new JWT<OauthUserData>(env.JWT_SECRET)
       try {
     if (!request.cookies.token) {
       throw new Error('no cookie!')

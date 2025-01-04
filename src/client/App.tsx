@@ -5,10 +5,10 @@ import AppLayout from './layouts/AppLayout.js';
 import { About } from './pages/About.js';
 import NotFound from './pages/NotFound.js';
 import { Login } from './pages/Login.js';
-import { AuthProvider, UserData } from './AuthContext.js';
+import { AuthProvider, OauthUserData } from './AuthContext.js';
 
 
-export function createApp (isLoggedIn: boolean, user?: UserData) {
+export function createApp (isLoggedIn: boolean, user?: OauthUserData) {
   return (
     <React.StrictMode>
       <AuthProvider initialIsLoggedIn={isLoggedIn} initialUser={user}>
