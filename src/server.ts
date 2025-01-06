@@ -7,10 +7,10 @@ import helmet from '@fastify/helmet'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
-import api from './routes/api.js'
 import cookie from '@fastify/cookie'
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { initDatabase } from './database.js';
+import { initDatabase } from './database.js'
+import apiPlugin from './routes/api.js'
 
 // load env variables
 config()
@@ -46,12 +46,12 @@ await server.register(FastifyVite, {
 })
 
 // all /api routes
-await server.register(api)
+await server.register(apiPlugin)
 
-server.get('/app', (req, reply) => {
+server.get('/app', (request, reply) => {
   return reply.html()
 })
-server.get('/app/*', (req, reply) => {
+server.get('/app/*', (request, reply) => {
   return reply.html()
 })
 

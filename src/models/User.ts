@@ -2,14 +2,14 @@ import { Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number
-
-  @Column()
+  @PrimaryColumn()
   email: string
 
+  @Column({ unique: true })
+  kerberos: string
+
   @Column()
-  kind: string // 'student' | 'prof'
+  type: string // 'student' | 'prof'
 
   @Column()
   name: string

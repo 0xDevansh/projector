@@ -3,13 +3,8 @@ import { User } from './User.js';
 
 @Entity()
 export class Student {
-  @PrimaryGeneratedColumn()
-  id: number
-
-  @Column()
-  email: string
-
-  @Column()
+  @PrimaryColumn()
+  @Column({ unique: true })
   kerberos: string
 
   @Column('text', { nullable: true })

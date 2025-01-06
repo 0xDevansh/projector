@@ -20,12 +20,13 @@ const AuthProvider = ({children, initialIsLoggedIn, initialUser}: {children: any
   const [user, setUser] = useState<OauthUserData|undefined>(initialUser)
 
   const reloadAuth = async () => {
-    // query api to check cookie
+    // query auth to check cookie
     const res = await axios.get('http://localhost:8080/api/check-auth')
     if (!res.data) {
       setIsLoggedIn(false)
       setUser(undefined)
     } else {
+      // fetch user details from database
       setIsLoggedIn(true)
       setUser(res.data.data)
       console.log(res.data.data);

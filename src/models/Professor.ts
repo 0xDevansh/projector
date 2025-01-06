@@ -3,14 +3,8 @@ import { User } from './User.js';
 
 @Entity()
 export class Professor {
-  @PrimaryGeneratedColumn()
-  id: number
-
-  @Column()
-  email: string
-
-  @Column()
-  username: string
+  @PrimaryColumn()
+  kerberos: string
 
   @Column('text', { nullable: true })
   areasOfResearch: string // 'student' | 'prof'
