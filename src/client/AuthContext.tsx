@@ -29,8 +29,6 @@ function AuthProvider({ children, initialIsLoggedIn, initialUser }: { children: 
     }
   }
 
-  // await reloadAuth()
-
   return (
     <AuthContext.Provider value={{ isLoggedIn, user, reloadAuth }}>
       {children}

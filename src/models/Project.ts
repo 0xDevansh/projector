@@ -10,6 +10,9 @@ export class Project {
   status: ProjectStatus
 
   @Column()
+  profKerberos: string
+
+  @Column()
   title: string
 
   @Column('text')
