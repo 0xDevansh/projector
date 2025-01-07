@@ -7,7 +7,7 @@ import 'reflect-metadata'
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'projector.db',
-  entities: [User],
+  entities: [User, Student, Professor],
   synchronize: true,
 })
 

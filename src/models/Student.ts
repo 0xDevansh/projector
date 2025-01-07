@@ -4,7 +4,6 @@ import { User } from './User.js'
 @Entity()
 export class Student {
   @PrimaryColumn()
-  @Column({ unique: true })
   kerberos: string
 
   @Column('text', { nullable: true })
