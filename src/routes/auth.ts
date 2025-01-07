@@ -1,12 +1,17 @@
 import type { TSchema } from '@sinclair/typebox'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
-import type { OauthUserData } from '../client/AuthContext.js'
 import { env } from 'node:process'
 import { Type } from '@sinclair/typebox'
 import axios from 'axios'
 import { JWT } from 'node-jsonwebtoken'
+import { authUserCheck } from '../database.js'
+import { ExtendedUserType } from './user.js'
 
 // This file holds the routes: /api/oauth-callback, /api/check-auth, /api/logout
+export interface OauthUserData {
+  name: string
+  email: string
+}
 
 interface CallbackQuery {
   code: string
@@ -86,10 +91,7 @@ export default async (server: FastifyInstance) => {
   server.get('/api/check-auth', {
     schema: {
       response: {
-        default: ResponseType(Type.Object({
-          email: Type.String(),
-          name: Type.String(),
-        })),
+        default: ResponseType(ExtendedUserType),
       },
     },
   }, async (request: FastifyRequest, reply: FastifyReply) => {
@@ -103,11 +105,16 @@ export default async (server: FastifyInstance) => {
       }
       // get data from token
       const data = await jwtUser.verify(request.cookies.token)
-      console.log(data)
-      reply.code(200).send({ error: null, data })
+      // get user details
+      const extendedUser = await authUserCheck(data.email, data.name)
+      if (!extendedUser) {
+        throw new Error('user not found')
+      }
+      reply.code(200).send({ error: null, data: extendedUser })
     }
-    catch (_err) {
-      reply.code(200).send({ error: 'user not found', data: null })
+    catch (err: any) {
+      console.error(err)
+      reply.code(200).send({ error: err.message, data: null })
     }
   })
 

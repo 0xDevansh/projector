@@ -17,11 +17,11 @@ export function Home() {
             <div className="data">
               <p>
                 Name:
-                {ctx.user?.name}
+                {ctx.user?.user.name}
               </p>
               <p>
                 Email:
-                {ctx.user?.email}
+                {ctx.user?.user.email}
               </p>
             </div>
           )

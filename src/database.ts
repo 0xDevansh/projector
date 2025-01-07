@@ -45,10 +45,11 @@ export type DeptCode = keyof typeof deptName
 
 const studentRepo = AppDataSource.getRepository(Student)
 const profRepo = AppDataSource.getRepository(Professor)
+const userRepo = AppDataSource.getRepository(User)
 
 interface StudentUser { user: User, type: 'student', student?: Student }
 interface ProfUser { user: User, type: 'prof', prof?: Professor }
-type ExtendedUser = StudentUser | ProfUser
+export type ExtendedUser = StudentUser | ProfUser
 
 export async function initDatabase() {
   await AppDataSource.initialize()
@@ -56,7 +57,7 @@ export async function initDatabase() {
 }
 
 export async function getExtendedUserByKerberos(kerberos: string): Promise<ExtendedUser | null> {
-  const user = await AppDataSource.getRepository(User).findOneBy({ email: kerberos })
+  const user = await AppDataSource.getRepository(User).findOneBy({ kerberos })
   if (!user)
     return null
 
@@ -112,4 +113,14 @@ export async function addProf(kerberos: string, areasOfResearch: string) {
       areasOfResearch,
     }])
     .execute()
+}
+
+// check if user exists, if not, create one
+export async function authUserCheck(email: string, name: string) {
+  const user = await getExtendedUserByKerberos(email.split('@')[0])
+  if (!user) {
+    await createUser(email, name, 'student')
+    return await getExtendedUserByKerberos(email.split('@')[0])
+  }
+  return user
 }

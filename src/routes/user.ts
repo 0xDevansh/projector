@@ -3,31 +3,31 @@ import { Type } from '@sinclair/typebox'
 import { getExtendedUserByKerberos } from '../database.js'
 import { Nullable, ResponseType } from './auth.js'
 
-// handles routes /api/user/:noun
-// user noun is the part before @ in email
-const UserType = Type.Object({
+// handles routes /api/user/:kerberos
+export const UserType = Type.Object({
   email: Type.String(),
   name: Type.String(),
+  kerberos: Type.String(),
+  type: Type.String(),
 })
-const StudentType = Type.Object({
+export const StudentType = Type.Object({
   kerberos: Type.String(),
   bio: Type.String(),
   degree: Type.String(),
   cgpa: Type.String(),
   resumePath: Type.String(),
 })
-const ProfType = Type.Object({
+export const ProfType = Type.Object({
   kerberos: Type.String(),
   areasOfResearch: Type.String(),
 })
 
-const ExtendedUserType = Type.Object({
+export const ExtendedUserType = Type.Object({
   user: UserType,
   student: Type.Optional(StudentType),
   prof: Type.Optional(ProfType),
 })
 
-// making this a post req to disallow accessing from the browser
 async function userPlugin(server: FastifyInstance) {
   server.get('/api/user/:kerberos', {
     schema: {
@@ -41,12 +41,12 @@ async function userPlugin(server: FastifyInstance) {
   }, async (request: FastifyRequest<{ Params: { kerberos: string } }>, reply) => {
     // fetch user
     if (!request.params.kerberos) {
-      await reply.code(400).send({ data: null, error: 'noun not found' })
+      await reply.code(400).send({ data: null, error: 'kerberos not found' })
       return
     }
     const user = await getExtendedUserByKerberos(request.params.kerberos)
     if (!user)
-      await reply.code(400).send({ data: null, error: 'noun not found' })
+      await reply.code(400).send({ data: null, error: 'user not found' })
     else await reply.code(200).send({ error: null, data: user })
   })
 

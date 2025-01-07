@@ -1,23 +1,19 @@
+import type { ExtendedUser } from '../database.js'
 import axios from 'axios'
 import React, { createContext, useState } from 'react'
 
-export interface OauthUserData {
-  email: string
-  name: string
-}
-
 interface AuthCtx {
   isLoggedIn: boolean
-  user: OauthUserData | undefined
+  user: ExtendedUser | undefined
   reloadAuth: () => void
 }
 
 const AuthContext = createContext<AuthCtx | undefined>(undefined)
 
-function AuthProvider({ children, initialIsLoggedIn, initialUser }: { children: any, initialIsLoggedIn: boolean, initialUser?: OauthUserData }) {
+function AuthProvider({ children, initialIsLoggedIn, initialUser }: { children: any, initialIsLoggedIn: boolean, initialUser?: ExtendedUser }) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initialIsLoggedIn)
 
-  const [user, setUser] = useState<OauthUserData | undefined>(initialUser)
+  const [user, setUser] = useState<ExtendedUser | undefined>(initialUser)
 
   const reloadAuth = async () => {
     // query auth to check cookie
@@ -30,7 +26,6 @@ function AuthProvider({ children, initialIsLoggedIn, initialUser }: { children: 
       // fetch user details from database
       setIsLoggedIn(true)
       setUser(res.data.data)
-      console.log(res.data.data)
     }
   }
 
