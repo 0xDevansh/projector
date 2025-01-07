@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User.js';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
+import { User } from './User.js'
 
 @Entity()
 export class Student {

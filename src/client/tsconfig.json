@@ -2,27 +2,27 @@
   "compilerOptions": {
     "composite": true,
     "target": "ES2020",
-    "useDefineForClassFields": true,
+    "jsx": "react",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true,
+
+    "baseUrl": ".",
     "module": "ESNext",
-    "skipLibCheck": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "resolveJsonModule": true,
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
   "include": ["./**/*"],
   "exclude": ["dist"]

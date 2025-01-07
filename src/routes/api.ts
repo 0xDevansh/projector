@@ -1,8 +1,8 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify'
 import authPlugin from './auth.js'
 import userPlugin from './user.js'
 
-const apiPlugin = async (server: FastifyInstance) => {
+async function apiPlugin(server: FastifyInstance) {
   server.register(authPlugin)
   server.register(userPlugin)
 }

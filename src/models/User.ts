@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity()
 export class User {
@@ -14,6 +14,6 @@ export class User {
   @Column()
   name: string
 
-  @Column()
+  @Column({ nullable: true })
   deptCode: string
 }

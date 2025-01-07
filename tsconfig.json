@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "target": "es2020",
+    "jsx": "react-jsx",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
     "noStrictGenericChecks": false,
+    "strictPropertyInitialization": false,
     "outDir": "dist",
+    "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "skipLibCheck": true
   },
   "include": ["src/**/*"]
 }

@@ -1,16 +1,16 @@
-import 'reflect-metadata'
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
 import { argv, env, exit } from 'node:process'
+import cookie from '@fastify/cookie'
 import helmet from '@fastify/helmet'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
-import cookie from '@fastify/cookie'
-import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { initDatabase } from './database.js'
 import apiPlugin from './routes/api.js'
+import 'reflect-metadata'
 
 // load env variables
 config()
@@ -30,14 +30,14 @@ const devLogger = {
 
 // setup server, add middleware
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
-  = fastify({ logger: env.ENV === 'dev' ? devLogger: false }).withTypeProvider<TypeBoxTypeProvider>()
+  = fastify({ logger: env.ENV === 'dev' ? devLogger : false }).withTypeProvider<TypeBoxTypeProvider>()
 
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
 await server.register(cookie, {
   secret: env.COOKIE_SECRET,
   parseOptions: {
     httpOnly: true,
-  }
+  },
 })
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, '../'),
