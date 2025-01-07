@@ -5,27 +5,17 @@ export function Home() {
   const ctx = React.useContext(AuthContext)
   console.log(ctx)
   return (
-    <div className="home">
+    <div className="home p-10">
       <title>Home - Projects Portal</title>
-      <h1>Home page</h1>
-      <p>
-        Is logged in:
-        {ctx?.isLoggedIn ? 'Yes' : 'No'}
-      </p>
       {ctx?.isLoggedIn
         ? (
-            <div className="data">
-              <p>
-                Name:
-                {ctx.user?.user.name}
-              </p>
-              <p>
-                Email:
-                {ctx.user?.user.email}
-              </p>
-            </div>
+            <h1 className="text-2xl">
+              Welcome back,
+              {' '}
+              {ctx?.user?.user.name || 'Unknown'}
+            </h1>
           )
-        : undefined}
+        : <h1 className="text-lg">Please log in</h1>}
     </div>
   )
 }

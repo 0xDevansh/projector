@@ -43,6 +43,27 @@ export const deptName = {
 }
 export type DeptCode = keyof typeof deptName
 
+export const projectType = {
+  disa: 'Design and Innovation Summer Award',
+  sura: 'Summer Undergraduate Research Award',
+  major: 'Major Project',
+  minor: 'Minor Project',
+  design: 'Design Project',
+}
+export type ProjectType = keyof typeof projectType
+
+export const projectDuration = {
+  summer: 'Summer Long',
+  winter: 'Winter Long',
+  semester: 'Semester Long',
+  year: 'Year Long',
+  short: 'Short Term',
+  long: 'Long Term',
+  other: 'Other',
+}
+export type ProjectDuration = keyof typeof projectDuration
+export type ProjectStatus = 'open' | 'closed' | 'ended'
+
 const studentRepo = AppDataSource.getRepository(Student)
 const profRepo = AppDataSource.getRepository(Professor)
 const userRepo = AppDataSource.getRepository(User)
@@ -57,7 +78,7 @@ export async function initDatabase() {
 }
 
 export async function getExtendedUserByKerberos(kerberos: string): Promise<ExtendedUser | null> {
-  const user = await AppDataSource.getRepository(User).findOneBy({ kerberos })
+  const user = await userRepo.findOneBy({ kerberos })
   if (!user)
     return null
 
