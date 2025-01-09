@@ -9,10 +9,9 @@ export function Home() {
       <title>Home - Projects Portal</title>
       {ctx?.isLoggedIn
         ? (
-            <h1 className="text-2xl">
+            <h1 className="text-lg">
               Welcome back,
-              {' '}
-              {ctx?.user?.user.name || 'Unknown'}
+              {` ${ctx.user?.type === 'prof' ? 'Prof. ' : ''} ${ctx?.user?.user.name}` || 'Unknown'}
             </h1>
           )
         : <h1 className="text-lg">Please log in</h1>}

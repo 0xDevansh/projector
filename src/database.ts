@@ -69,14 +69,14 @@ export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, c
     .execute()
 }
 
-export async function addOrUpdateProf(kerberos: string, areasOfResearch: string) {
+export async function addOrUpdateProf(data: { kerberos: string, areasOfResearch?: string }) {
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(Professor)
     .values([{
-      kerberos,
-      areasOfResearch,
-      user: { kerberos },
+      kerberos: data.kerberos,
+      areasOfResearch: data.areasOfResearch,
+      user: { kerberos: data.kerberos },
     }])
     .orUpdate(['areasOfResearch'], ['kerberos'])
     .execute()

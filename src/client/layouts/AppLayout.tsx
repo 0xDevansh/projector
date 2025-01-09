@@ -14,7 +14,7 @@ export default function AppLayout() {
     }
     const studentExists = !!(authCtx.user.type === 'student' && authCtx.user.student)
     const profExists = !!(authCtx.user.type === 'prof' && authCtx.user.prof)
-    console.log(location.pathname, studentExists, profExists)
+
     if ((!studentExists && !profExists) && location.pathname !== '/app/onboarding') {
       navigate('/app/onboarding')
     }

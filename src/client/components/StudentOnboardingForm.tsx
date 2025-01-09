@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
@@ -25,9 +25,11 @@ const formSchema = z.object({
 export default function StudentOnboardingForm() {
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
-  if (!authContext || !authContext.user) {
-    navigate('/app/login')
-  }
+  useEffect(() => {
+    if (!authContext || !authContext.user) {
+      navigate('/app/login')
+    }
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,7 +39,6 @@ export default function StudentOnboardingForm() {
       navigate('/app')
       return
     }
-    console.log(values)
     // Send to server
     const res = await axios.post('/api/user/student', { name: authContext.user.user.name, kerberos: authContext.user.user.email.split('@')[0], ...values }, { headers: { 'Content-Type': 'application/json' } })
     if (res.status !== 200) {

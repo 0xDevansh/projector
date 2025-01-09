@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import type { DegreeCode, DeptCode } from '../types.js'
 import { Type } from '@sinclair/typebox'
-import { addOrUpdateStudent, createOrUpdateUser, getExtendedUserByKerberos } from '../database.js'
+import { addOrUpdateProf, addOrUpdateStudent, createOrUpdateUser, getExtendedUserByKerberos } from '../database.js'
 import { Nullable, ResponseType } from './auth.js'
 
 // handles routes /api/user/:kerberos
@@ -71,9 +71,25 @@ async function userPlugin(server: FastifyInstance) {
   }, async (request: FastifyRequest<{ Body: { name: string, kerberos: string, department: DeptCode, bio?: string, degree: DegreeCode, cgpa: string, resumePath?: string } }>, reply) => {
     // create student
     const { kerberos, department, bio, degree, cgpa, resumePath, name } = request.body
-    console.log('=========================', request.body)
     await addOrUpdateStudent(kerberos, degree, cgpa, bio, resumePath)
     await createOrUpdateUser({ deptCode: department, email: `${kerberos}@iitd.ac.in`, type: 'student', name })
+    await reply.code(200).send({ error: null, data: null })
+  })
+
+  server.post('/api/user/prof', {
+    schema: {
+      body: Type.Object({
+        kerberos: Type.String(),
+        areasOfResearch: Type.Optional(Type.String()),
+      }),
+      response: {
+        default: ResponseType(Type.Null()),
+      },
+    },
+  }, async (request: FastifyRequest<{ Body: { kerberos: string, areasOfResearch?: string } }>, reply) => {
+    // upsert prof
+    const { kerberos, areasOfResearch } = request.body
+    await addOrUpdateProf({ kerberos, areasOfResearch })
     await reply.code(200).send({ error: null, data: null })
   })
 }

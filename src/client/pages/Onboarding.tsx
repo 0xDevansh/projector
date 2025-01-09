@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
 import StudentOnboardingForm from '../components/StudentOnboardingForm.js'
+import ProfOnboardingForm from '../components/ui/ProfOnboardingForm.js'
 
 export default function Onboarding() {
   // redirect to home if user already exists
@@ -23,7 +24,7 @@ export default function Onboarding() {
       <h1 className="text-2xl">Please enter your details</h1>
       {authCtx?.user?.type === 'student'
         ? <StudentOnboardingForm />
-        : <h1>Prof form not implemented yet</h1>}
+        : <ProfOnboardingForm />}
     </div>
   )
 }
