@@ -1,4 +1,4 @@
-import type { ExtendedUser } from '../database.js'
+import type { ExtendedUser } from '../types.js'
 import axios from 'axios'
 import React, { createContext, useState } from 'react'
 

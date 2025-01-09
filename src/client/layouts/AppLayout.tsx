@@ -1,8 +1,25 @@
-import React from 'react'
-import { Outlet } from 'react-router'
+import React, { useContext, useEffect } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router'
+import { AuthContext } from '../AuthContext.js'
 import { Header } from './Header.js'
 
 export default function AppLayout() {
+  const authCtx = useContext(AuthContext)
+  const navigate = useNavigate()
+  const location = useLocation()
+  useEffect(() => {
+    // if student or prof is not defined, go to onboarding
+    if (!authCtx || !authCtx.isLoggedIn || !authCtx.user) {
+      return
+    }
+    const studentExists = !!(authCtx.user.type === 'student' && authCtx.user.student)
+    const profExists = !!(authCtx.user.type === 'prof' && authCtx.user.prof)
+    console.log(location.pathname, studentExists, profExists)
+    if ((!studentExists && !profExists) && location.pathname !== '/app/onboarding') {
+      navigate('/app/onboarding')
+    }
+  })
+
   return (
     <div className="app">
       <Header />

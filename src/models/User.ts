@@ -2,18 +2,18 @@ import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity()
 export class User {
-  @PrimaryColumn()
+  @PrimaryColumn('text')
   email: string
 
-  @Column({ unique: true })
+  @Column('text', { unique: true })
   kerberos: string
 
-  @Column()
+  @Column('text')
   type: string // 'student' | 'prof'
 
-  @Column()
+  @Column('text')
   name: string
 
-  @Column({ nullable: true })
+  @Column('text', { nullable: true })
   deptCode: string
 }

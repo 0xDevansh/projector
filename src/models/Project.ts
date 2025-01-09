@@ -1,4 +1,4 @@
-import type { DegreeCode, DeptCode, ProjectDuration, ProjectStatus, ProjectType } from '../database.js'
+import type { DegreeCode, DeptCode, ProjectDuration, ProjectStatus, ProjectType } from '../types.js'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
@@ -6,13 +6,13 @@ export class Project {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ default: 'open' })
+  @Column('text', { default: 'open' })
   status: ProjectStatus
 
-  @Column()
+  @Column('text')
   profKerberos: string
 
-  @Column()
+  @Column('text')
   title: string
 
   @Column('text')

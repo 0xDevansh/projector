@@ -110,6 +110,7 @@ export default async (server: FastifyInstance) => {
       if (!extendedUser) {
         throw new Error('user not found')
       }
+      console.log(extendedUser)
       reply.code(200).send({ error: null, data: extendedUser })
     }
     catch (err: any) {

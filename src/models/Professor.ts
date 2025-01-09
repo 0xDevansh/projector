@@ -3,7 +3,7 @@ import { User } from './User.js'
 
 @Entity()
 export class Professor {
-  @PrimaryColumn()
+  @PrimaryColumn('text')
   kerberos: string
 
   @Column('text', { nullable: true })

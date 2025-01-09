@@ -1,3 +1,4 @@
+import type { DegreeCode, ExtendedUser, UserType } from './types.js'
 import { DataSource } from 'typeorm'
 import { Professor } from './models/Professor.js'
 import { Student } from './models/Student.js'
@@ -11,66 +12,9 @@ const AppDataSource = new DataSource({
   synchronize: true,
 })
 
-export type UserType = 'student' | 'prof'
-export const degreeName = {
-  btech: 'BTech',
-  mtech: 'MTech',
-  dual: 'Dual Degree',
-  phd: 'PhD',
-  msc: 'MSc',
-  msr: 'MSR',
-  bdes: 'BDes',
-  mdes: 'MDes',
-}
-export type DegreeCode = keyof typeof degreeName
-
-export const deptName = {
-  am: 'Applied Mechanics',
-  beb: 'Biochemical Engineering and Biotechnology',
-  chemical: 'Chemical Engineering',
-  chemistry: 'Chemistry',
-  civil: 'Civil Engineering',
-  cse: 'Computer Science and Engineering',
-  design: 'Design',
-  ee: 'Electrical Engineering',
-  dese: 'Energy Science and Engineering',
-  hss: 'Humanities and Social Sciences',
-  mse: 'Materials Science and Engineering',
-  maths: 'Mathematics',
-  mech: 'Mechanical Engineering',
-  physics: 'Physics',
-  textile: 'Textile and Fibre Engineering',
-}
-export type DeptCode = keyof typeof deptName
-
-export const projectType = {
-  disa: 'Design and Innovation Summer Award',
-  sura: 'Summer Undergraduate Research Award',
-  major: 'Major Project',
-  minor: 'Minor Project',
-  design: 'Design Project',
-}
-export type ProjectType = keyof typeof projectType
-
-export const projectDuration = {
-  summer: 'Summer Long',
-  winter: 'Winter Long',
-  semester: 'Semester Long',
-  year: 'Year Long',
-  short: 'Short Term',
-  long: 'Long Term',
-  other: 'Other',
-}
-export type ProjectDuration = keyof typeof projectDuration
-export type ProjectStatus = 'open' | 'closed' | 'ended'
-
 const studentRepo = AppDataSource.getRepository(Student)
 const profRepo = AppDataSource.getRepository(Professor)
 const userRepo = AppDataSource.getRepository(User)
-
-interface StudentUser { user: User, type: 'student', student?: Student }
-interface ProfUser { user: User, type: 'prof', prof?: Professor }
-export type ExtendedUser = StudentUser | ProfUser
 
 export async function initDatabase() {
   await AppDataSource.initialize()
@@ -94,24 +38,22 @@ export async function getExtendedUserByKerberos(kerberos: string): Promise<Exten
   }
 }
 
-export async function createUser(email: string, name: string, type: UserType, deptCode?: string) {
-  if (!email.includes('@'))
+export async function createOrUpdateUser(data: { email?: string, name?: string, type?: UserType, deptCode?: string }) {
+  if (!data.email?.includes('@'))
     throw new Error('Invalid email')
 
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(User)
     .values([{
-      email,
-      name,
-      type,
-      deptCode,
-      kerberos: email.split('@')[0],
+      ...data,
+      kerberos: data.email?.split('@')[0],
     }])
+    .orUpdate(['deptCode', 'type'], ['email'])
     .execute()
 }
 
-export async function addStudent(kerberos: string, degree: DegreeCode, cgpa: string, bio?: string, resumePath?: string) {
+export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, cgpa: string, bio?: string, resumePath?: string) {
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(Student)
@@ -121,18 +63,22 @@ export async function addStudent(kerberos: string, degree: DegreeCode, cgpa: str
       degree,
       cgpa,
       resumePath,
+      user: { kerberos },
     }])
+    .orUpdate(['bio', 'degree', 'cgpa', 'resumePath'], ['kerberos'])
     .execute()
 }
 
-export async function addProf(kerberos: string, areasOfResearch: string) {
+export async function addOrUpdateProf(kerberos: string, areasOfResearch: string) {
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(Professor)
     .values([{
       kerberos,
       areasOfResearch,
+      user: { kerberos },
     }])
+    .orUpdate(['areasOfResearch'], ['kerberos'])
     .execute()
 }
 
@@ -140,7 +86,7 @@ export async function addProf(kerberos: string, areasOfResearch: string) {
 export async function authUserCheck(email: string, name: string) {
   const user = await getExtendedUserByKerberos(email.split('@')[0])
   if (!user) {
-    await createUser(email, name, 'student')
+    await createOrUpdateUser({ email, name, type: 'student' })
     return await getExtendedUserByKerberos(email.split('@')[0])
   }
   return user

@@ -1,21 +1,22 @@
+import type { DegreeCode } from '../types.js'
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
 import { User } from './User.js'
 
 @Entity()
 export class Student {
-  @PrimaryColumn()
+  @PrimaryColumn('text')
   kerberos: string
 
   @Column('text', { nullable: true })
   bio: string
 
-  @Column()
-  degree: string
+  @Column('text')
+  degree: DegreeCode
 
-  @Column({ nullable: true })
+  @Column('text', { nullable: true })
   cgpa: string
 
-  @Column({ nullable: true })
+  @Column('text', { nullable: true })
   resumePath: string
 
   @OneToOne(() => User)
