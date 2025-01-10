@@ -45,6 +45,11 @@ await server.register(FastifyVite, {
   spa: true,
 })
 
+server.setErrorHandler((error, request, reply) => {
+  server.log.error(error)
+  reply.code(500).send({ error: `internal server error: ${error.message}`, data: null })
+})
+
 // all /api routes
 await server.register(apiPlugin)
 

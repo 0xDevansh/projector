@@ -3,7 +3,7 @@
 import axios from 'axios'
 import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import { AuthContext } from '../../AuthContext.js'
+import { AuthContext } from '../AuthContext.js'
 
 export default function ProfOnboardingForm() {
   const navigate = useNavigate()

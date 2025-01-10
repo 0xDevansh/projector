@@ -18,7 +18,7 @@ const formSchema = z.object({
   degree: z.string(),
   cgpa: z.string().refine((v) => {
     return !Number.isNaN(Number.parseFloat(v)) && v.includes('.') && v.split('.')[1].length === 2
-  }, { message: 'Must be a in the format XX.XX' }),
+  }, { message: 'Must have 2 decimal places' }),
   resume: z.instanceof(File).optional(),
 })
 
@@ -144,7 +144,7 @@ export default function StudentOnboardingForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Your current CGPA</FormDescription>
+              <FormDescription>Your current CGPA (upto 2 decimal places)</FormDescription>
               <FormMessage />
             </FormItem>
           )}

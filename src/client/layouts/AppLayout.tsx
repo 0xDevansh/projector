@@ -8,6 +8,7 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   useEffect(() => {
+    console.log('AppLayout useEffect called!')
     // if student or prof is not defined, go to onboarding
     if (!authCtx || !authCtx.isLoggedIn || !authCtx.user) {
       return
@@ -23,7 +24,9 @@ export default function AppLayout() {
   return (
     <div className="app">
       <Header />
-      <Outlet />
+      <div className="app-content py-5 px-10">
+        <Outlet />
+      </div>
     </div>
   )
 }

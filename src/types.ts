@@ -1,6 +1,7 @@
 import type { Professor } from './models/Professor.js'
 import type { Student } from './models/Student.js'
 import type { User } from './models/User.js'
+import { type Static, type TSchema, Type } from '@sinclair/typebox'
 
 export type UserType = 'student' | 'prof'
 export const degreeName = {
@@ -50,7 +51,7 @@ export const projectDuration = {
   other: 'Other',
 }
 export type ProjectDuration = keyof typeof projectDuration
-export type ProjectStatus = 'open' | 'closed' | 'ended'
+export type ProjectStatus = 'open' | 'closed' | 'ended' | 'draft'
 
 interface StudentUser {
   user: User
@@ -65,3 +66,29 @@ interface ProfUser {
 }
 
 export type ExtendedUser = StudentUser | ProfUser
+
+export const Nullable = (type: TSchema) => Type.Union([Type.Null(), type])
+
+export const ProjectTypebox = Type.Object({
+  id: Type.String(),
+  status: Type.String(),
+  createdAt: Type.Date(),
+  profKerberos: Type.String(),
+  title: Type.String(),
+  description: Type.String(),
+  type: Type.Array(Type.String()),
+  duration: Type.Array(Type.String()),
+  eligibleDegrees: Nullable(Type.Array(Type.String())),
+  eligibleDepartments: Nullable(Type.Array(Type.String())),
+  vacancy: Type.Integer(),
+  minCgpa: Nullable(Type.String()),
+  minYear: Nullable(Type.Integer()),
+  prerequisites: Nullable(Type.String()),
+  learningOutcomes: Nullable(Type.String()),
+  selectionProcedure: Nullable(Type.String()),
+  lastApplyDate: Type.Date(),
+  stipendProvided: Type.Boolean(),
+  stipendAmount: Nullable(Type.Integer()),
+})
+
+export type ProjectTSType = Static<typeof ProjectTypebox>

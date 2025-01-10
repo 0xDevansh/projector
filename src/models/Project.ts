@@ -1,13 +1,18 @@
 import type { DegreeCode, DeptCode, ProjectDuration, ProjectStatus, ProjectType } from '../types.js'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { nanoid } from 'nanoid'
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
+import { Professor } from './Professor.js'
 
 @Entity()
 export class Project {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ default: nanoid(8) })
   id: string
 
-  @Column('text', { default: 'open' })
+  @Column('text', { default: 'draft' })
   status: ProjectStatus
+
+  @CreateDateColumn()
+  createdAt: Date
 
   @Column('text')
   profKerberos: string
@@ -57,4 +62,8 @@ export class Project {
 
   @Column('int', { nullable: true })
   stipendAmount: number
+
+  @OneToOne(() => Professor, { eager: false })
+  @JoinColumn()
+  prof: Professor
 }

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
+import ProfOnboardingForm from '../components/ProfOnboardingForm.js'
 import StudentOnboardingForm from '../components/StudentOnboardingForm.js'
-import ProfOnboardingForm from '../components/ui/ProfOnboardingForm.js'
 
 export default function Onboarding() {
   // redirect to home if user already exists

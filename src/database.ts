@@ -1,6 +1,7 @@
 import type { DegreeCode, ExtendedUser, UserType } from './types.js'
 import { DataSource } from 'typeorm'
 import { Professor } from './models/Professor.js'
+import { Project } from './models/Project.js'
 import { Student } from './models/Student.js'
 import { User } from './models/User.js'
 import 'reflect-metadata'
@@ -8,13 +9,14 @@ import 'reflect-metadata'
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'projector.db',
-  entities: [User, Student, Professor],
+  entities: [User, Student, Professor, Project],
   synchronize: true,
 })
 
 const studentRepo = AppDataSource.getRepository(Student)
 const profRepo = AppDataSource.getRepository(Professor)
 const userRepo = AppDataSource.getRepository(User)
+const projectRepo = AppDataSource.getRepository(Project)
 
 export async function initDatabase() {
   await AppDataSource.initialize()
@@ -36,6 +38,10 @@ export async function getExtendedUserByKerberos(kerberos: string): Promise<Exten
     const prof = await profRepo.findOneBy({ kerberos }) ?? undefined
     return { user, type: 'prof', prof }
   }
+}
+
+export async function getUser(kerberos: string) {
+  return await userRepo.findOneBy({ kerberos })
 }
 
 export async function createOrUpdateUser(data: { email?: string, name?: string, type?: UserType, deptCode?: string }) {
@@ -90,4 +96,8 @@ export async function authUserCheck(email: string, name: string) {
     return await getExtendedUserByKerberos(email.split('@')[0])
   }
   return user
+}
+
+export async function getProjectById(id?: string) {
+  return await projectRepo.findOneBy({ id })
 }
