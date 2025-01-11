@@ -1,4 +1,13 @@
-import type { DegreeCode, ExtendedUser, UserType } from './types.js'
+import type { Static } from '@sinclair/typebox'
+import type {
+  DegreeCode,
+  DeptCode,
+  ExtendedUser,
+  ProjectDuration,
+  ProjectFilterType,
+  ProjectType,
+  UserType,
+} from './types.js'
 import { DataSource } from 'typeorm'
 import { Professor } from './models/Professor.js'
 import { Project } from './models/Project.js'
@@ -100,4 +109,44 @@ export async function authUserCheck(email: string, name: string) {
 
 export async function getProjectById(id?: string) {
   return await projectRepo.findOneBy({ id })
+}
+
+export async function getProjects(filter: Partial<Static<typeof ProjectFilterType>>) {
+  console.log(filter)
+  let qBuilder = projectRepo.createQueryBuilder('user')
+    // .select('*')
+    .where(`status = 'open'`)
+
+  if (filter.profKerberos)
+    qBuilder = qBuilder.andWhere(`profKerberos = :profKerberos`, { profKerberos: filter.profKerberos })
+  if (filter.stipendProvided)
+    qBuilder = qBuilder.andWhere(`stipendProvided = :stipendProvided`, { stipendProvided: filter.stipendProvided })
+  if (filter.minYear)
+    qBuilder = qBuilder.andWhere(`minYear <= :minYear`, { minYear: filter.minYear })
+  if (filter.applyDateNotPassed)
+    qBuilder = qBuilder.andWhere(`lastApplyDate >= :now`, { now: new Date().toISOString() })
+
+  const res = (await qBuilder.getMany())
+    .filter((p) => {
+      const criteria: boolean[] = []
+      if (filter.projectType) {
+        const types = filter.projectType.split(',')
+        criteria.push(types.some(type => p.projectType.includes(type as ProjectType)))
+      }
+      if (filter.duration) {
+        const durations = filter.duration.split(',')
+        criteria.push(durations.some(dur => p.duration.includes(dur as ProjectDuration)))
+      }
+      if (filter.eligibleDegrees && p.eligibleDegrees) {
+        const eDegrees = filter.eligibleDegrees.split(',')
+        criteria.push(eDegrees.some(deg => p.eligibleDegrees.includes(deg as DegreeCode)))
+      }
+      if (filter.eligibleDepartments && p.eligibleDepartments) {
+        const eDepts = filter.eligibleDepartments.split(',')
+        criteria.push(eDepts.some(dept => p.eligibleDepartments.includes(dept as DeptCode)))
+      }
+      return criteria.every(c => c)
+    })
+  console.log(res)
+  return res
 }

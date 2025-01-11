@@ -25,7 +25,7 @@ export class Project {
 
   // https://typeorm.io/entities#simple-array-column-type
   @Column('simple-array')
-  type: ProjectType[]
+  projectType: ProjectType[]
 
   @Column('simple-array')
   duration: ProjectDuration[]

@@ -19,7 +19,7 @@ export default function ProjectCard({ project }: { project: ProjectTSType }) {
       <CardContent className="flex-grow">
         <p className="text-sm text-muted-foreground mb-4">{project.description}</p>
         <div className="flex flex-wrap gap-2 mb-2">
-          <Badge>{project.type}</Badge>
+          <Badge>{project.projectType}</Badge>
           <Badge variant="outline" className="flex items-center gap-1">
             <CalendarIcon className="w-3 h-3" />
             {project.duration}
