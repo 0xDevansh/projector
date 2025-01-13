@@ -116,6 +116,7 @@ export async function getProjects(filter: Partial<Static<typeof ProjectFilterTyp
   let qBuilder = projectRepo.createQueryBuilder('user')
     // .select('*')
     .where(`status = 'open'`)
+    .leftJoinAndSelect('user.prof', 'prof')
 
   if (filter.profKerberos)
     qBuilder = qBuilder.andWhere(`profKerberos = :profKerberos`, { profKerberos: filter.profKerberos })

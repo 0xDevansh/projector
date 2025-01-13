@@ -63,7 +63,7 @@ export class Project {
   @Column('int', { nullable: true })
   stipendAmount: number
 
-  @OneToOne(() => Professor, { eager: false })
+  @OneToOne(() => Professor, { eager: true })
   @JoinColumn()
   prof: Professor
 }

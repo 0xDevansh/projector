@@ -11,6 +11,7 @@ export function Header() {
       <div className="space-x-8">
         <NavLink to="/app">Home</NavLink>
         <NavLink to="/app/about">About</NavLink>
+        <NavLink to="/app/projects">Projects</NavLink>
         { login?.isLoggedIn
           ? <a href="/api/logout">Logout</a>
           : <NavLink to="/app/login">Login</NavLink>}

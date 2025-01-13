@@ -54,7 +54,7 @@ export default function ProjectDetails() {
                   <div className="flex items-center gap-2">
                     <BriefcaseIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Type:</span>
-                    {project.type.map((type: ProjectType) => {
+                    {project.projectType.map((type: ProjectType) => {
                       const pType = ['disa', 'sura'].includes(type)
                         ? type.toUpperCase()
                         : type[0].toUpperCase() + type.substring(1)
