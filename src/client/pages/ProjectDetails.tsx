@@ -1,3 +1,4 @@
+import type { Project } from '../../models/ProfessorProject.js'
 import type {
   DegreeCode,
   DeptCode,
@@ -7,33 +8,46 @@ import type {
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { BanknoteIcon, BookCheckIcon, BriefcaseIcon, CalendarIcon, ClockIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
-import React from 'react'
-import { useParams } from 'react-router'
+import React, { useContext } from 'react'
+import { Link, useParams } from 'react-router'
 import useSWR from 'swr'
 import { degreeName, deptName, projectDuration, projectType,
 } from '../../types.js'
+import { AuthContext } from '../AuthContext.js'
 import { Badge, BadgeWithTooltip } from '../components/ui/badge.js'
+import { buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
+import NotFound from './NotFound.js'
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 export default function ProjectDetails() {
   const { id } = useParams()
   if (!id) {
-    return <h1>Project not found</h1>
+    return <NotFound />
   }
+
+  const authCtx = useContext(AuthContext)
 
   const { data, error, isLoading } = useSWR(`/api/project/${id}`, fetcher)
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
   else if (error || !data?.data) {
-    return <h1 className="text-lg">There was an error loading this project</h1>
+    return <NotFound />
   }
   else {
-    const project = data.data
-    console.log(project)
+    const project = data.data as Project
+    // if project is not open, only prof can view it
+    if (project.projectStatus !== 'open') {
+      if (!authCtx?.isLoggedIn) {
+        return <h1>Please log in to view this project</h1>
+      }
+      else if (authCtx?.user?.user.kerberos !== project.profKerberos) {
+        return <NotFound />
+      }
+    }
 
     return (
       <div className="container mx-auto py-8 px-4">
@@ -49,7 +63,7 @@ export default function ProjectDetails() {
                   <div className="flex items-center gap-2">
                     <GraduationCapIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Professor:</span>
-                    <span>{`${project.profUser.name} (${deptName[project.profUser.deptCode as DeptCode]})`}</span>
+                    <span>{`${project.prof.user.name} (${deptName[project.prof.user.deptCode as DeptCode]})`}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <BriefcaseIcon className="w-5 h-5 text-muted-foreground" />
@@ -174,16 +188,32 @@ export default function ProjectDetails() {
             </Card>
           </div>
           <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Apply for this Project</CardTitle>
-                <CardDescription>Fill out the form below to submit your application</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* <ApplicationForm projectId={project.id} /> */}
-                Application form coming soon
-              </CardContent>
-            </Card>
+            {authCtx?.user?.user.type === 'student' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Apply for this Project</CardTitle>
+                  <CardDescription>Fill out the form below to submit your application</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {/* <ApplicationForm projectId={project.id} /> */}
+                  Application form coming soon
+                </CardContent>
+              </Card>
+            )}
+            {authCtx?.user?.user.kerberos === project.profKerberos
+            && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Draft project</CardTitle>
+                  <CardDescription>This project is currently a draft. You can edit it or make it public</CardDescription>
+                </CardHeader>
+                <CardContent className="gap-3 flex flex-wrap">
+                  <Link className={buttonVariants({ variant: 'default' })} to={`/app/project/${project.id}/edit`}>Edit Project</Link>
+                  <Link className={buttonVariants({ variant: 'ghost' })} to={`/app/project/${project.id}/edit`}>Make Public</Link>
+                  <p>Both of these options have not been implemented</p>
+                </CardContent>
+              </Card>
+            ) }
           </div>
         </div>
       </div>
