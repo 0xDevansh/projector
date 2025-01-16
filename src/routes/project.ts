@@ -1,10 +1,10 @@
 import type { Static } from '@sinclair/typebox'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
+import type { Project } from '../models/ProfessorProject.js'
 import type { ProjectTSType } from '../types.js'
 import { Type } from '@sinclair/typebox'
-import { addProject, getProjectById, getProjects, getUser } from '../database.js'
+import { addProject, getProjectById, getProjects, getUser, updateProject } from '../database.js'
 import { PartialDeep, ProjectFilterType, ProjectTypebox } from '../types.js'
-import { ResponseType } from './auth.js'
 
 type CreateProject = Omit<ProjectTSType, 'id' | 'createdAt'>
 
@@ -26,6 +26,32 @@ async function projectPlugin(server: FastifyInstance) {
       return await reply.code(400).send({ data: null, error: null })
     const profUser = await getUser(project.profKerberos)
     await reply.code(200).send({ error: null, data: { ...project, profUser } })
+  })
+
+  server.put('/api/project/:id', {
+    schema: {
+      params: Type.Object({
+        id: Type.String({ minLength: 1 }),
+      }),
+      body: Type.Partial(ProjectTypebox),
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string }, Body: Partial<Project> }>, reply) => {
+    if (!request.params.id) {
+      await reply.code(400).send({ data: null, error: 'id not found' })
+      return
+    }
+    // prof must be same
+    const project = await getProjectById(request.params.id)
+    if (!project) {
+      await reply.code(400).send({ data: null, error: 'project not found' })
+      return
+    }
+    if (request.extendedUser?.type !== 'prof' || request.extendedUser.user?.kerberos !== project.profKerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    await updateProject(request.params.id, request.body)
+    await reply.code(200).send({ error: null, data: 'updated' })
   })
 
   server.post('/api/project', {
@@ -50,9 +76,6 @@ async function projectPlugin(server: FastifyInstance) {
   server.get('/api/projects', {
     schema: {
       querystring: PartialDeep(ProjectFilterType),
-      response: {
-        default: ResponseType(Type.Array(ProjectTypebox)),
-      },
     },
   }, async (request: FastifyRequest<{ Querystring: Partial<Static<typeof ProjectFilterType>> }>, reply) => {
     const projects = await getProjects(request.query)

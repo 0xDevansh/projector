@@ -166,3 +166,11 @@ export async function addProject(project: Partial<ProjectTSType>) {
     .execute()
   return id
 }
+
+export async function updateProject(id: string, updates: Partial<Project>) {
+  await AppDataSource.createQueryBuilder()
+    .update(Project)
+    .set(updates)
+    .where('id = :id', { id })
+    .execute()
+}

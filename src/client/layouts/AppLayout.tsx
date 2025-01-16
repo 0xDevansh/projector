@@ -27,6 +27,9 @@ export default function AppLayout() {
         case 'projectCreated':
           toast({ title: 'Project created successfully!' })
           break
+        case 'madePublic':
+          toast({ title: 'Made project public' })
+          break
       }
       location.state.toast = undefined
     }

@@ -9,13 +9,13 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { BanknoteIcon, BookCheckIcon, BriefcaseIcon, CalendarIcon, ClockIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
 import React, { useContext } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 import { degreeName, deptName, projectDuration, projectType,
 } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
 import { Badge, BadgeWithTooltip } from '../components/ui/badge.js'
-import { buttonVariants } from '../components/ui/button.js'
+import { Button, buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
 import NotFound from './NotFound.js'
@@ -29,7 +29,7 @@ export default function ProjectDetails() {
   }
 
   const authCtx = useContext(AuthContext)
-
+  const navigate = useNavigate()
   const { data, error, isLoading } = useSWR(`/api/project/${id}`, fetcher)
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
@@ -47,6 +47,11 @@ export default function ProjectDetails() {
       else if (authCtx?.user?.user.kerberos !== project.profKerberos) {
         return <NotFound />
       }
+    }
+
+    const onMakePublic = async () => {
+      await axios.put(`/api/project/${id}`, { projectStatus: 'open' })
+      navigate(`/app/project/${id}`, { state: { toast: { code: 'madePublic' } } })
     }
 
     return (
@@ -200,7 +205,7 @@ export default function ProjectDetails() {
                 </CardContent>
               </Card>
             )}
-            {authCtx?.user?.user.kerberos === project.profKerberos
+            {authCtx?.user?.user.kerberos === project.profKerberos && project.projectStatus === 'draft'
             && (
               <Card>
                 <CardHeader>
@@ -209,7 +214,7 @@ export default function ProjectDetails() {
                 </CardHeader>
                 <CardContent className="gap-3 flex flex-wrap">
                   <Link className={buttonVariants({ variant: 'default' })} to={`/app/project/${project.id}/edit`}>Edit Project</Link>
-                  <Link className={buttonVariants({ variant: 'ghost' })} to={`/app/project/${project.id}/edit`}>Make Public</Link>
+                  <Button variant="default" onClick={onMakePublic}>Make Public</Button>
                   <p>Both of these options have not been implemented</p>
                 </CardContent>
               </Card>
