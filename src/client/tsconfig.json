@@ -11,9 +11,6 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "paths": {
-      "@/*": ["./*"]
-    },
     "resolveJsonModule": true,
     /* Linting */
     "strict": true,

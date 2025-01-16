@@ -39,8 +39,8 @@ async function projectPlugin(server: FastifyInstance) {
         await reply.code(403).send({ error: 'Forbidden', data: null })
         return
       }
-      await addProject(request.body)
-      await reply.code(200).send({ error: null, data: 'Project added' })
+      const id = await addProject(request.body)
+      await reply.code(200).send({ error: null, data: id })
     }
     catch (err: any) {
       await reply.code(500).send({ error: err.message, data: null })

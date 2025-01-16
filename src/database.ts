@@ -158,12 +158,11 @@ export async function addProject(project: Partial<ProjectTSType>) {
   const prof = await profRepo.findOneBy({ kerberos: project.profKerberos })
   if (!prof)
     throw new Error('Professor not found')
-  const res = await AppDataSource.createQueryBuilder()
+  const id = nanoid(8)
+  await AppDataSource.createQueryBuilder()
     .insert()
     .into(Project)
-    .values([{ ...project, id: nanoid(8), prof }])
+    .values([{ ...project, id, prof }])
     .execute()
-  console.log(res)
-  // return await getProjectById()
+  return id
 }
-// .orUpdate(['projectStatus', 'title', 'description', 'projectType', 'duration', 'eligibleDegrees', 'eligibleDepartments', 'vacancy', 'minCgpa', 'minYear', 'prerequisites', 'learningOutcomes', 'selectionProcedure', 'lastApplyDate', 'stipendProvided', 'stipendAmount'], ['id'])

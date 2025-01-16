@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="inline-flex flex-col max-w-md m-2 self-stretch">
+    <Card className="inline-flex flex-col max-w-md m-2 self-stretch" key={project.id}>
       <CardHeader>
         {project.projectStatus === 'draft' && <h3 className="text-red-600">Draft</h3>}
         {project.projectStatus === 'closed' && <h3 className="text-yellow-500">Closed</h3>}
@@ -40,7 +40,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           })}
           {project.duration.map((duration) => {
             return (
-              <Badge variant="outline" className="flex items-center gap-1">
+              <Badge variant="outline" className="flex items-center gap-1" key={duration}>
                 <CalendarIcon className="w-3 h-3" />
                 {projectDuration[duration as ProjectDuration]}
               </Badge>

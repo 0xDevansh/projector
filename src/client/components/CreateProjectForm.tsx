@@ -127,7 +127,9 @@ export default function MyForm() {
         console.error('Failed to submit form') // TODO replace this with a toast
       }
       else {
-        navigate('/app/', { state: { toast: { code: 'projectCreated' } } })
+        console.log(res.data)
+        const id = res.data.data
+        navigate(id ? `/app/project/${id}` : '/app/', { state: { toast: { code: 'projectCreated' } } })
       }
     }
     catch (error) {
