@@ -5,12 +5,13 @@ import type {
   ExtendedUser,
   ProjectDuration,
   ProjectFilterType,
+  ProjectTSType,
   ProjectType,
   UserType,
 } from './types.js'
+import { nanoid } from 'nanoid'
 import { DataSource } from 'typeorm'
-import { Professor } from './models/Professor.js'
-import { Project } from './models/Project.js'
+import { Professor, Project } from './models/ProfessorProject.js'
 import { Student } from './models/Student.js'
 import { User } from './models/User.js'
 import 'reflect-metadata'
@@ -111,12 +112,14 @@ export async function getProjectById(id?: string) {
   return await projectRepo.findOneBy({ id })
 }
 
-export async function getProjects(filter: Partial<Static<typeof ProjectFilterType>>) {
+export async function getProjects(filter: Partial<Static<typeof ProjectFilterType>>, getDrafts = false) {
   console.log(filter)
   let qBuilder = projectRepo.createQueryBuilder('user')
     // .select('*')
-    .where(`status = 'open'`)
     .leftJoinAndSelect('user.prof', 'prof')
+
+  if (!getDrafts)
+    qBuilder = qBuilder.where(`projectStatus = 'open'`)
 
   if (filter.profKerberos)
     qBuilder = qBuilder.andWhere(`profKerberos = :profKerberos`, { profKerberos: filter.profKerberos })
@@ -148,6 +151,19 @@ export async function getProjects(filter: Partial<Static<typeof ProjectFilterTyp
       }
       return criteria.every(c => c)
     })
-  console.log(res)
   return res
 }
+
+export async function addProject(project: Partial<ProjectTSType>) {
+  const prof = await profRepo.findOneBy({ kerberos: project.profKerberos })
+  if (!prof)
+    throw new Error('Professor not found')
+  const res = await AppDataSource.createQueryBuilder()
+    .insert()
+    .into(Project)
+    .values([{ ...project, id: nanoid(8), prof }])
+    .execute()
+  console.log(res)
+  // return await getProjectById()
+}
+// .orUpdate(['projectStatus', 'title', 'description', 'projectType', 'duration', 'eligibleDegrees', 'eligibleDepartments', 'vacancy', 'minCgpa', 'minYear', 'prerequisites', 'learningOutcomes', 'selectionProcedure', 'lastApplyDate', 'stipendProvided', 'stipendAmount'], ['id'])

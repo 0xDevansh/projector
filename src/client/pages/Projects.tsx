@@ -1,13 +1,10 @@
 import type { ProjectTSType } from '../../types.js'
-import axios from 'axios'
 import React from 'react'
 import useSWR from 'swr'
 import ProjectCard from '../components/ProjectCard.js'
 
-const fetcher = (url: string) => axios.get(url).then(res => res.data)
-
-export default function Projects() {
-  const { data, error, isLoading } = useSWR(`/api/projects`, fetcher)
+export default function Projects({ profProjects }: { profProjects?: boolean }) {
+  const { data, error, isLoading } = useSWR(profProjects ? `/api/my-projects` : `/api/projects`)
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
@@ -16,6 +13,7 @@ export default function Projects() {
   }
   else {
     const projects = data.data
+    console.log(projects)
     return (
       <div className="projects items-stretch">
         {projects.map((proj: ProjectTSType) => <ProjectCard project={proj} key={proj.id} />)}

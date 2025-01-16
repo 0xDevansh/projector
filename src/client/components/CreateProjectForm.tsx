@@ -1,21 +1,24 @@
 'use client'
 
-import type { ProjectDuration, ProjectType } from '../../types.js'
+import type { DegreeCode, DeptCode, ProjectDuration, ProjectType } from '../../types.js'
 import {
   zodResolver,
 } from '@hookform/resolvers/zod'
+import axios from 'axios'
 import {
   format,
 } from 'date-fns'
 import {
   Calendar as CalendarIcon,
 } from 'lucide-react'
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   useForm,
 } from 'react-hook-form'
+import { useNavigate } from 'react-router'
 import * as z from 'zod'
-import { projectDuration, projectType } from '../../types.js'
+import { degreeName, deptName, projectDuration, projectType } from '../../types.js'
+import { AuthContext } from '../AuthContext.js'
 import {
   cn,
 } from '../utils.js'
@@ -64,15 +67,19 @@ const formSchema = z.object({
   projectType: z.array(z.string()),
   duration: z.array(z.string()),
   lastApplyDate: z.coerce.date(),
-  minYear: z.number().min(1).optional(),
-  minCgpa: z.string().optional(),
+  minYear: z.coerce.number().min(1).optional(),
+  minCgpa: z.string().optional().refine((v) => {
+    if (!v)
+      return true
+    else return !Number.isNaN(Number.parseFloat(v)) && v.includes('.') && v.split('.')[1].length === 2
+  }, { message: 'Must have 2 decimal places' }),
   eligibleDegrees: z.array(z.string()).optional(),
   eligibleDepartments: z.array(z.string()).optional(),
   prerequisites: z.string().optional(),
   selectionProcedure: z.string().optional(),
   learningOutcomes: z.string().optional(),
   stipendProvided: z.boolean(),
-  stipendAmount: z.number().optional(),
+  stipendAmount: z.coerce.number().optional(),
 }).superRefine(({ stipendProvided, stipendAmount, projectType, duration }, ctx) => {
   if (stipendProvided && !stipendAmount) {
     ctx.addIssue({
@@ -81,7 +88,6 @@ const formSchema = z.object({
       code: 'custom',
     })
   }
-  console.log(projectType, duration)
   if (!projectType.length) {
     ctx.addIssue({
       message: 'This field is required',
@@ -99,6 +105,11 @@ const formSchema = z.object({
 })
 
 export default function MyForm() {
+  const authCtx = useContext(AuthContext)
+  if (!authCtx?.user || authCtx.user.type !== 'prof') {
+    return <p className="text-lg">Must be logged in as prof to see this form</p>
+  }
+  const navigate = useNavigate()
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -109,9 +120,15 @@ export default function MyForm() {
     },
   })
 
-  function onSubmit(values: z.infer < typeof formSchema >) {
+  async function onSubmit(values: z.infer < typeof formSchema >) {
     try {
-      console.log(values)
+      const res = await axios.post('/api/project', { ...values, projectStatus: 'draft', profKerberos: authCtx?.user?.user.kerberos || '' }, { headers: { 'Content-Type': 'application/json' } })
+      if (res.status !== 200) {
+        console.error('Failed to submit form') // TODO replace this with a toast
+      }
+      else {
+        navigate('/app/', { state: { toast: { code: 'projectCreated' } } })
+      }
     }
     catch (error) {
       console.error('Form submission error', error)
@@ -233,7 +250,7 @@ export default function MyForm() {
                       className="max-w-xs"
                     >
                       <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select languages" />
+                        <MultiSelectorInput placeholder="Select duration" />
                       </MultiSelectorTrigger>
                       <MultiSelectorContent>
                         <MultiSelectorList>
@@ -355,13 +372,15 @@ export default function MyForm() {
                       className="max-w-xs"
                     >
                       <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select languages" />
+                        <MultiSelectorInput placeholder="Select" />
                       </MultiSelectorTrigger>
                       <MultiSelectorContent>
                         <MultiSelectorList>
-                          <MultiSelectorItem value="React">React</MultiSelectorItem>
-                          <MultiSelectorItem value="Vue">Vue</MultiSelectorItem>
-                          <MultiSelectorItem value="Svelte">Svelte</MultiSelectorItem>
+                          {
+                            Object.keys(degreeName).map(degree => (
+                              <MultiSelectorItem key={degree} value={degree}>{degreeName[degree as DegreeCode]}</MultiSelectorItem>
+                            ))
+                          }
                         </MultiSelectorList>
                       </MultiSelectorContent>
                     </MultiSelector>
@@ -389,13 +408,15 @@ export default function MyForm() {
                       className="max-w-xs"
                     >
                       <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select languages" />
+                        <MultiSelectorInput placeholder="Select" />
                       </MultiSelectorTrigger>
                       <MultiSelectorContent>
                         <MultiSelectorList>
-                          <MultiSelectorItem value="React">React</MultiSelectorItem>
-                          <MultiSelectorItem value="Vue">Vue</MultiSelectorItem>
-                          <MultiSelectorItem value="Svelte">Svelte</MultiSelectorItem>
+                          {
+                            Object.keys(deptName).map(dCode => (
+                              <MultiSelectorItem key={dCode} value={dCode}>{deptName[dCode as DeptCode]}</MultiSelectorItem>
+                            ))
+                          }
                         </MultiSelectorList>
                       </MultiSelectorContent>
                     </MultiSelector>

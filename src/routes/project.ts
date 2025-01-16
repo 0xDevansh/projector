@@ -1,9 +1,12 @@
 import type { Static } from '@sinclair/typebox'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
+import type { ProjectTSType } from '../types.js'
 import { Type } from '@sinclair/typebox'
-import { getProjectById, getProjects, getUser } from '../database.js'
+import { addProject, getProjectById, getProjects, getUser } from '../database.js'
 import { PartialDeep, ProjectFilterType, ProjectTypebox } from '../types.js'
 import { ResponseType } from './auth.js'
+
+type CreateProject = Omit<ProjectTSType, 'id' | 'createdAt'>
 
 async function projectPlugin(server: FastifyInstance) {
   server.get('/api/project/:id', {
@@ -25,6 +28,25 @@ async function projectPlugin(server: FastifyInstance) {
     await reply.code(200).send({ error: null, data: { ...project, profUser } })
   })
 
+  server.post('/api/project', {
+    schema: {
+      body: Type.Omit(ProjectTypebox, ['id', 'createdAt']),
+    },
+  }, async (request: FastifyRequest<{ Body: CreateProject }>, reply) => {
+    try {
+      // runs only when profKerberos = self kerberos
+      if (request.extendedUser?.type !== 'prof' || request.body.profKerberos !== request.extendedUser?.user.kerberos) {
+        await reply.code(403).send({ error: 'Forbidden', data: null })
+        return
+      }
+      await addProject(request.body)
+      await reply.code(200).send({ error: null, data: 'Project added' })
+    }
+    catch (err: any) {
+      await reply.code(500).send({ error: err.message, data: null })
+    }
+  })
+
   server.get('/api/projects', {
     schema: {
       querystring: PartialDeep(ProjectFilterType),
@@ -34,6 +56,24 @@ async function projectPlugin(server: FastifyInstance) {
     },
   }, async (request: FastifyRequest<{ Querystring: Partial<Static<typeof ProjectFilterType>> }>, reply) => {
     const projects = await getProjects(request.query)
+    await reply.code(200).send({ error: null, data: projects })
+  })
+
+  server.get('/api/my-projects', {
+    schema: {
+      querystring: PartialDeep(ProjectFilterType),
+      response: {
+        default: ResponseType(Type.Array(ProjectTypebox)),
+      },
+    },
+  }, async (request: FastifyRequest<{ Querystring: Partial<Static<typeof ProjectFilterType>> }>, reply) => {
+    // runs only when user is a prof
+    const kerberos = request.extendedUser?.type === 'prof' ? request.extendedUser.prof?.kerberos : undefined
+    if (!kerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    const projects = await getProjects({ profKerberos: kerberos }, true)
     await reply.code(200).send({ error: null, data: projects })
   })
 }

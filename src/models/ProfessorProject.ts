@@ -1,15 +1,30 @@
 import type { DegreeCode, DeptCode, ProjectDuration, ProjectStatus, ProjectType } from '../types.js'
-import { nanoid } from 'nanoid'
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm'
-import { Professor } from './Professor.js'
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
+import { User } from './User.js'
+
+@Entity()
+export class Professor {
+  @PrimaryColumn('text', { unique: true })
+  kerberos: string
+
+  @Column('text', { nullable: true })
+  areasOfResearch: string // 'student' | 'prof'
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User
+
+  @OneToMany(() => Project, project => project.prof)
+  projects: Project[]
+}
 
 @Entity()
 export class Project {
-  @PrimaryColumn({ default: nanoid(8) })
+  @PrimaryColumn()
   id: string
 
   @Column('text', { default: 'draft' })
-  status: ProjectStatus
+  projectStatus: ProjectStatus
 
   @CreateDateColumn()
   createdAt: Date
@@ -63,7 +78,6 @@ export class Project {
   @Column('int', { nullable: true })
   stipendAmount: number
 
-  @OneToOne(() => Professor, { eager: true })
-  @JoinColumn()
+  @ManyToOne(() => Professor, prof => prof.projects, { eager: true })
   prof: Professor
 }

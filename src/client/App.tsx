@@ -1,6 +1,8 @@
 import type { ExtendedUser } from '../types.js'
+import axios from 'axios'
 import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { SWRConfig } from 'swr'
 import { AuthProvider } from './AuthContext.js'
 import CreateProjectForm from './components/CreateProjectForm.js'
 import { TooltipProvider } from './components/ui/tooltip.js'
@@ -16,24 +18,30 @@ import Projects from './pages/Projects.js'
 export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
   return (
     <React.StrictMode>
-      <AuthProvider initialIsLoggedIn={isLoggedIn} initialUser={user}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="app" element={<AppLayout />}>
-                <Route index element={<Home />} />
-                <Route path="about" element={<About />} />
-                <Route path="login" element={<Login />} />
-                <Route path="onboarding" element={<Onboarding />} />
-                <Route path="projects" element={<Projects />} />
-                <Route path="createproject" element={<CreateProjectForm />} />
-                <Route path="project/:id" element={<ProjectDetails />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+      <SWRConfig value={{
+        refreshInterval: 5000,
+        fetcher: (url: string) => axios.get(url).then(res => res.data),
+      }}
+      >
+        <AuthProvider initialIsLoggedIn={isLoggedIn} initialUser={user}>
+          <TooltipProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="app" element={<AppLayout />}>
+                  <Route index element={<Home />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="onboarding" element={<Onboarding />} />
+                  <Route path="projects" element={<Projects />} />
+                  <Route path="createproject" element={<CreateProjectForm />} />
+                  <Route path="project/:id" element={<ProjectDetails />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </SWRConfig>
     </React.StrictMode>
   )
 }

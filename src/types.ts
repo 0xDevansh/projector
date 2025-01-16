@@ -1,5 +1,5 @@
-import type { Evaluate, Static, TIntersect, TObject, TPartial, TProperties, TSchema, TUnion } from '@sinclair/typebox'
-import type { Professor } from './models/Professor.js'
+import type { Evaluate, TIntersect, TObject, TPartial, TProperties, TSchema, TUnion } from '@sinclair/typebox'
+import type { Professor } from './models/ProfessorProject.js'
 import type { Student } from './models/Student.js'
 import type { User } from './models/User.js'
 import { Type, TypeGuard } from '@sinclair/typebox'
@@ -72,24 +72,24 @@ export const Nullable = (type: TSchema) => Type.Union([Type.Null(), type])
 
 export const ProjectTypebox = Type.Object({
   id: Type.String(),
-  status: Type.String(),
+  projectStatus: Type.String(),
   createdAt: Type.String(),
   profKerberos: Type.String(),
   title: Type.String(),
   description: Type.String(),
   projectType: Type.Array(Type.String()),
   duration: Type.Array(Type.String()),
-  eligibleDegrees: Nullable(Type.Array(Type.String())),
-  eligibleDepartments: Nullable(Type.Array(Type.String())),
+  eligibleDegrees: Type.Optional(Nullable(Type.Array(Type.String()))),
+  eligibleDepartments: Type.Optional(Nullable(Type.Array(Type.String()))),
   vacancy: Type.Integer(),
-  minCgpa: Nullable(Type.String()),
-  minYear: Nullable(Type.Integer()),
-  prerequisites: Nullable(Type.String()),
-  learningOutcomes: Nullable(Type.String()),
-  selectionProcedure: Nullable(Type.String()),
+  minCgpa: Type.Optional(Nullable(Type.String())),
+  minYear: Type.Optional(Nullable(Type.Integer())),
+  prerequisites: Type.Optional(Nullable(Type.String())),
+  learningOutcomes: Type.Optional(Nullable(Type.String())),
+  selectionProcedure: Type.Optional(Nullable(Type.String())),
   lastApplyDate: Type.String(),
   stipendProvided: Type.Boolean(),
-  stipendAmount: Nullable(Type.Integer()),
+  stipendAmount: Type.Optional(Nullable(Type.Integer())),
 })
 
 export const ProjectFilterType = Type.Object({
@@ -104,7 +104,27 @@ export const ProjectFilterType = Type.Object({
   applyDateNotPassed: Type.Boolean(),
 })
 
-export type ProjectTSType = Static<typeof ProjectTypebox>
+export interface ProjectTSType {
+  id: string
+  projectStatus: ProjectStatus
+  createdAt: Date
+  profKerberos: string
+  title: string
+  description: string
+  projectType: ProjectType[]
+  duration: ProjectDuration[]
+  eligibleDegrees?: DegreeCode[]
+  eligibleDepartments?: DeptCode[]
+  vacancy: number
+  minCgpa?: string
+  minYear?: number
+  prerequisites?: string
+  learningOutcomes?: string
+  selectionProcedure?: string
+  lastApplyDate: Date
+  stipendProvided: boolean
+  stipendAmount?: number
+}
 
 // -------------------------------------------------------------------------------------
 // TPartialDeepProperties

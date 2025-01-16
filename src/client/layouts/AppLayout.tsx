@@ -1,12 +1,15 @@
 import React, { useContext, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
+import { Toaster } from '../components/ui/toaster.js'
+import { useToast } from '../hooks/use-toast.js'
 import { Header } from './Header.js'
 
 export default function AppLayout() {
   const authCtx = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()
+  const { toast } = useToast()
   useEffect(() => {
     console.log('AppLayout useEffect called!')
     // if student or prof is not defined, go to onboarding
@@ -19,6 +22,14 @@ export default function AppLayout() {
     if ((!studentExists && !profExists) && location.pathname !== '/app/onboarding') {
       navigate('/app/onboarding')
     }
+    if (location.state?.toast?.code) {
+      switch (location.state.toast.code) {
+        case 'projectCreated':
+          toast({ title: 'Project created successfully!' })
+          break
+      }
+      location.state.toast = undefined
+    }
   })
 
   return (
@@ -26,6 +37,7 @@ export default function AppLayout() {
       <Header />
       <div className="app-content py-5 px-10">
         <Outlet />
+        <Toaster />
       </div>
     </div>
   )

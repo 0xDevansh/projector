@@ -4,12 +4,11 @@ import { createApp } from './App.js'
 
 const rootElement
   = document.getElementById('root') || document.createElement('div')
-console.log('MOUNTING')
 const root = createRoot(rootElement)
 
 // fetch auth data
 const res = await axios.get('http://localhost:8080/api/check-auth')
-if (res.data.error == null) {
+if (res.data.data) {
   root.render(createApp(true, res.data.data))
 }
 else {

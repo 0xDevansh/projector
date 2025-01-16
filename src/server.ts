@@ -1,6 +1,7 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
+import type { ExtendedUser } from './types.js'
 import { resolve } from 'node:path'
 import { argv, env, exit } from 'node:process'
 import cookie from '@fastify/cookie'
@@ -8,9 +9,17 @@ import helmet from '@fastify/helmet'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
+import { getAuthUser } from './authHook.js'
 import { initDatabase } from './database.js'
 import apiPlugin from './routes/api.js'
 import 'reflect-metadata'
+
+// required for extendedUser
+declare module 'fastify' {
+  interface FastifyRequest {
+    extendedUser: ExtendedUser | null
+  }
+}
 
 // load env variables
 config()
@@ -31,6 +40,11 @@ const devLogger = {
 // setup server, add middleware
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
   = fastify({ logger: env.ENV === 'dev' ? devLogger : false }).withTypeProvider<TypeBoxTypeProvider>()
+
+server.decorateRequest('extendedUser', null)
+server.addHook('preHandler', async (request, _reply) => {
+  request.extendedUser = await getAuthUser(request.cookies.token)
+})
 
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
 await server.register(cookie, {
