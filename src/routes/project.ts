@@ -62,9 +62,6 @@ async function projectPlugin(server: FastifyInstance) {
   server.get('/api/my-projects', {
     schema: {
       querystring: PartialDeep(ProjectFilterType),
-      response: {
-        default: ResponseType(Type.Array(ProjectTypebox)),
-      },
     },
   }, async (request: FastifyRequest<{ Querystring: Partial<Static<typeof ProjectFilterType>> }>, reply) => {
     // runs only when user is a prof

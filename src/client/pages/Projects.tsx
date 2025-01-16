@@ -1,4 +1,4 @@
-import type { ProjectTSType } from '../../types.js'
+import type { Project } from '../../models/ProfessorProject.js'
 import React from 'react'
 import useSWR from 'swr'
 import ProjectCard from '../components/ProjectCard.js'
@@ -16,7 +16,8 @@ export default function Projects({ profProjects }: { profProjects?: boolean }) {
     console.log(projects)
     return (
       <div className="projects items-stretch">
-        {projects.map((proj: ProjectTSType) => <ProjectCard project={proj} key={proj.id} />)}
+        {projects.map((proj: Project) => <ProjectCard project={proj} key={proj.id} />)}
+        {projects.length === 0 && <h1 className="text-lg">No open projects found</h1>}
       </div>
     )
   }

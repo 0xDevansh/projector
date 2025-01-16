@@ -113,10 +113,10 @@ export async function getProjectById(id?: string) {
 }
 
 export async function getProjects(filter: Partial<Static<typeof ProjectFilterType>>, getDrafts = false) {
-  console.log(filter)
   let qBuilder = projectRepo.createQueryBuilder('user')
     // .select('*')
     .leftJoinAndSelect('user.prof', 'prof')
+    .leftJoinAndSelect('prof.user', 'profUser')
 
   if (!getDrafts)
     qBuilder = qBuilder.where(`projectStatus = 'open'`)

@@ -1,6 +1,6 @@
 import React from 'react'
 import { AuthContext } from '../AuthContext.js'
-import ProfHomepage from '../components/ProfHomepage'
+import ProfHomepage from '../components/ProfHomepage.js'
 
 export function Home() {
   const ctx = React.useContext(AuthContext)

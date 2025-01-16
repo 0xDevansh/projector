@@ -89,7 +89,7 @@ export default function ProjectDetails() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-semibold">Last Apply Date:</span>
+                    <span className="font-semibold">Last Application Date:</span>
                     <span>{dayjs(project.lastApplyDate).format('DD MMM YYYY')}</span>
                   </div>
                   <div className="flex items-center gap-2">

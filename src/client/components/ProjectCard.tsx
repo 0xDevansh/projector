@@ -1,4 +1,6 @@
-import type { ProjectDuration, ProjectTSType, ProjectType } from '../../types.js'
+import type { Project } from '../../models/ProfessorProject.js'
+import type { ProjectDuration, ProjectType } from '../../types.js'
+import dayjs from 'dayjs'
 import { CalendarIcon, UserIcon } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router'
@@ -7,13 +9,16 @@ import { Badge, BadgeWithTooltip } from './ui/badge.js'
 import { Button } from './ui/button.js'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card.js'
 
-export default function ProjectCard({ project }: { project: ProjectTSType }) {
+export default function ProjectCard({ project }: { project: Project }) {
   return (
-    <Card className="inline-flex flex-col max-w-md min-w-sm m-2 self-stretch">
+    <Card className="inline-flex flex-col max-w-md m-2 self-stretch">
       <CardHeader>
+        {project.projectStatus === 'draft' && <h3 className="text-red-600">Draft</h3>}
+        {project.projectStatus === 'closed' && <h3 className="text-yellow-500">Closed</h3>}
+        {project.projectStatus === 'ended' && <h3 className="text-red-600">Ended</h3>}
         <CardTitle>{project.title}</CardTitle>
         <CardDescription>
-          {`${project.profKerberos}`}
+          {`${project.prof?.user?.name}` || project.profKerberos}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
@@ -53,14 +58,14 @@ export default function ProjectCard({ project }: { project: ProjectTSType }) {
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-2">
         <div className="text-sm">
-          Last Apply Date:
+          Last Application Date:
           {' '}
-          <span className="font-semibold">{project.lastApplyDate.toString()}</span>
+          <span className="font-semibold">{dayjs(project.lastApplyDate).format('DD MMM YYYY')}</span>
         </div>
         <div className="text-sm">
           Stipend:
           {' '}
-          <span className="font-semibold">{project.stipendProvided ? 'Provided' : 'Not Provided'}</span>
+          <span className="font-semibold">{project.stipendProvided ? `₹${project.stipendAmount}` : 'Not Provided'}</span>
         </div>
         <Link to={`/app/project/${project.id}`} className="w-full mt-2">
           <Button className="w-full">View Details</Button>

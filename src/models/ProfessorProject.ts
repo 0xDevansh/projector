@@ -10,7 +10,7 @@ export class Professor {
   @Column('text', { nullable: true })
   areasOfResearch: string // 'student' | 'prof'
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { eager: true })
   @JoinColumn()
   user: User
 
