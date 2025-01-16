@@ -2,8 +2,10 @@ import React, { useContext } from 'react'
 import { NavLink } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
 
+const loginLink = 'https://oauthdevclub.vercel.app/signin?client_id=mHuhtM4zb6YlaY9qxEvNpvmEM4w&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Foauth-callback'
+
 export function Header() {
-  const login = useContext(AuthContext)
+  const authCtx = useContext(AuthContext)
 
   return (
     <header className="flex flex-row justify-around px-8 py-4">
@@ -12,9 +14,9 @@ export function Header() {
         <NavLink to="/app">Home</NavLink>
         <NavLink to="/app/about">About</NavLink>
         <NavLink to="/app/projects">Projects</NavLink>
-        { login?.isLoggedIn
+        { authCtx?.isLoggedIn
           ? <a href="/api/logout">Logout</a>
-          : <NavLink to="/app/login">Login</NavLink>}
+          : <NavLink to={loginLink}>Login</NavLink>}
       </div>
     </header>
   )
