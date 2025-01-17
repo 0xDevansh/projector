@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { degreeName, deptName } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
+import { useToast } from '../hooks/use-toast.js'
+import { loginLink } from '../layouts/Header.js'
 import { Button } from './ui/button.js'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form.js'
 import { Input } from './ui/input.js'
@@ -25,9 +27,10 @@ const formSchema = z.object({
 export default function StudentOnboardingForm() {
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
+  const { toast } = useToast()
   useEffect(() => {
     if (!authContext || !authContext.user) {
-      navigate('/app/login')
+      navigate(loginLink)
     }
   })
 
@@ -42,7 +45,8 @@ export default function StudentOnboardingForm() {
     // Send to server
     const res = await axios.post('/api/user/student', { name: authContext.user.user.name, kerberos: authContext.user.user.email.split('@')[0], ...values }, { headers: { 'Content-Type': 'application/json' } })
     if (res.status !== 200) {
-      console.error('Failed to submit form') // TODO replace this with a toast
+      console.error('Failed to submit form')
+      toast({ title: 'Failed to submit form', variant: 'destructive' })
       return
     }
     await authContext?.reloadAuth()
@@ -57,7 +61,7 @@ export default function StudentOnboardingForm() {
           name="degree"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Degree</FormLabel>
+              <FormLabel required>Degree</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -83,7 +87,7 @@ export default function StudentOnboardingForm() {
           name="department"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Department</FormLabel>
+              <FormLabel required>Department</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value as string | undefined}>
                 <FormControl>
                   <SelectTrigger>
@@ -135,7 +139,7 @@ export default function StudentOnboardingForm() {
           name="cgpa"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>CGPA</FormLabel>
+              <FormLabel required>CGPA</FormLabel>
               <FormControl>
                 <Input
                   placeholder=""

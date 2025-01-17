@@ -146,7 +146,7 @@ export default function MyForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project Title</FormLabel>
+              <FormLabel required>Project Title</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Title"
@@ -165,7 +165,7 @@ export default function MyForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel required>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder=""
@@ -184,7 +184,7 @@ export default function MyForm() {
           name="vacancy"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vacancy</FormLabel>
+              <FormLabel required>Vacancy</FormLabel>
               <FormControl>
                 <Input
                   placeholder=""
@@ -207,7 +207,7 @@ export default function MyForm() {
               name="projectType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Type</FormLabel>
+                  <FormLabel required>Project Type</FormLabel>
                   <FormControl>
                     <MultiSelector
                       values={field.value as any}
@@ -243,7 +243,7 @@ export default function MyForm() {
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration type</FormLabel>
+                  <FormLabel required>Duration type</FormLabel>
                   <FormControl>
                     <MultiSelector
                       values={field.value as any}
@@ -279,7 +279,7 @@ export default function MyForm() {
           name="lastApplyDate"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Last application date</FormLabel>
+              <FormLabel required>Last application date</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -501,7 +501,7 @@ export default function MyForm() {
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Stipend Provided</FormLabel>
+                <FormLabel required>Stipend Provided</FormLabel>
 
                 <FormMessage />
               </div>
