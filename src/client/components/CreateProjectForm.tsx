@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router'
 import * as z from 'zod'
 import { degreeName, deptName, projectDuration, projectType } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
+import usePersist from '../hooks/usePersist.js'
 import {
   cn,
 } from '../utils.js'
@@ -119,6 +120,7 @@ export default function MyForm() {
       eligibleDepartments: [],
     },
   })
+  usePersist('create_project', { watch: form.watch, setValue: form.setValue, storage: window.localStorage })
 
   async function onSubmit(values: z.infer < typeof formSchema >) {
     try {
