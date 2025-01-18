@@ -11,6 +11,7 @@ import type {
 } from './types.js'
 import { nanoid } from 'nanoid'
 import { DataSource } from 'typeorm'
+import { Application } from './models/Application.js'
 import { Professor, Project } from './models/ProfessorProject.js'
 import { Student } from './models/Student.js'
 import { User } from './models/User.js'
@@ -19,7 +20,7 @@ import 'reflect-metadata'
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'projector.db',
-  entities: [User, Student, Professor, Project],
+  entities: [User, Student, Professor, Project, Application],
   synchronize: true,
 })
 
@@ -27,6 +28,7 @@ const studentRepo = AppDataSource.getRepository(Student)
 const profRepo = AppDataSource.getRepository(Professor)
 const userRepo = AppDataSource.getRepository(User)
 const projectRepo = AppDataSource.getRepository(Project)
+const applicationRepo = AppDataSource.getRepository(Application)
 
 export async function initDatabase() {
   await AppDataSource.initialize()
@@ -173,4 +175,26 @@ export async function updateProject(id: string, updates: Partial<Project>) {
     .set(updates)
     .where('id = :id', { id })
     .execute()
+}
+
+export async function addOrUpdateApplication(data: { projectId: string, studentKerberos: string, relevantSkills?: string, statementOfPurpose?: string }) {
+  const project = await projectRepo.findOneBy({ id: data.projectId })
+  if (!project)
+    throw new Error('Project not found')
+  const student = await studentRepo.findOneBy({ kerberos: data.studentKerberos })
+  if (!student)
+    throw new Error('Student not found')
+  const id = nanoid(8)
+  // check if an application already exists
+  const existing = await applicationRepo.findOneBy({ projectId: data.projectId, studentKerberos: data.studentKerberos })
+  if (!existing)
+    await applicationRepo.insert({ id, ...data, project, student })
+  else
+    await applicationRepo.update({ statementOfPurpose: data.statementOfPurpose, relevantSkills: data.relevantSkills }, { id: existing.id })
+}
+
+export async function getApplications(projectId: string, studentKerberos?: string) {
+  if (studentKerberos)
+    return await applicationRepo.findBy({ projectId, studentKerberos })
+  return await applicationRepo.findBy({ projectId })
 }

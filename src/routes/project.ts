@@ -3,7 +3,15 @@ import type { FastifyInstance, FastifyRequest } from 'fastify'
 import type { Project } from '../models/ProfessorProject.js'
 import type { ProjectTSType } from '../types.js'
 import { Type } from '@sinclair/typebox'
-import { addProject, getProjectById, getProjects, getUser, updateProject } from '../database.js'
+import {
+  addOrUpdateApplication,
+  addProject,
+  getApplications,
+  getProjectById,
+  getProjects,
+  getUser,
+  updateProject,
+} from '../database.js'
 import { PartialDeep, ProjectFilterType, ProjectTypebox } from '../types.js'
 
 type CreateProject = Omit<ProjectTSType, 'id' | 'createdAt'>
@@ -95,6 +103,36 @@ async function projectPlugin(server: FastifyInstance) {
     }
     const projects = await getProjects({ profKerberos: kerberos }, true)
     await reply.code(200).send({ error: null, data: projects })
+  })
+
+  server.post('/api/project/:id/applications', {
+    schema: {
+      params: Type.Object({
+        id: Type.String({ minLength: 1 }),
+      }),
+      body: Type.Object({
+        statementOfPurpose: Type.String(),
+        relevantSkills: Type.String(),
+      }),
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string }, Body: { relevantSkills: string, statementOfPurpose: string } }>, reply) => {
+    // runs only when user is a student
+    if (!request.params.id) {
+      await reply.code(400).send({ data: null, error: 'id not found' })
+      return
+    }
+    const kerberos = request.extendedUser?.type === 'student' ? request.extendedUser.student?.kerberos : undefined
+    if (!kerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    // should not have an existing application
+    const application = await getApplications(request.params.id, kerberos)
+    if (application.length) {
+      await reply.code(400).send({ error: 'Already applied', data: null })
+    }
+
+    await addOrUpdateApplication({ projectId: request.params.id, studentKerberos: kerberos, ...request.body })
   })
 }
 

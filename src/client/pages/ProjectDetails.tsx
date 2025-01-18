@@ -5,6 +5,7 @@ import type {
   ProjectDuration,
   ProjectType,
 } from '../../types.js'
+import type { AuthCtx } from '../AuthContext.js'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { BanknoteIcon, BookCheckIcon, BriefcaseIcon, CalendarIcon, ClockIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
@@ -14,10 +15,12 @@ import useSWR from 'swr'
 import { degreeName, deptName, projectDuration, projectType,
 } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
+import ProjectApplicationForm from '../components/ProjectApplicationForm.js'
 import { Badge, BadgeWithTooltip } from '../components/ui/badge.js'
 import { Button, buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
+import { loginLink } from '../layouts/Header.js'
 import NotFound from './NotFound.js'
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
@@ -29,7 +32,6 @@ export default function ProjectDetails() {
   }
 
   const authCtx = useContext(AuthContext)
-  const navigate = useNavigate()
   const { data, error, isLoading } = useSWR(`/api/project/${id}`, fetcher)
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
@@ -49,16 +51,11 @@ export default function ProjectDetails() {
       }
     }
 
-    const onMakePublic = async () => {
-      await axios.put(`/api/project/${id}`, { projectStatus: 'open' })
-      navigate(`/app/project/${id}`, { state: { toast: { code: 'madePublic' } } })
-    }
-
     return (
       <div className="container mx-auto py-8 px-4">
         <h1 className="text-4xl font-bold mb-6">{project.title}</h1>
-        <div className="grid gap-8 md:grid-cols-3">
-          <div className="md:col-span-2">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Project Details</CardTitle>
@@ -192,36 +189,65 @@ export default function ProjectDetails() {
               </CardContent>
             </Card>
           </div>
-          <div>
-            {authCtx?.user?.user.type === 'student' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Apply for this Project</CardTitle>
-                  <CardDescription>Fill out the form below to submit your application</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {/* <ApplicationForm projectId={project.id} /> */}
-                  Application form coming soon
-                </CardContent>
-              </Card>
-            )}
-            {authCtx?.user?.user.kerberos === project.profKerberos && project.projectStatus === 'draft'
-            && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Draft project</CardTitle>
-                  <CardDescription>This project is currently a draft. You can edit it or make it public</CardDescription>
-                </CardHeader>
-                <CardContent className="gap-3 flex flex-wrap">
-                  <Link className={buttonVariants({ variant: 'default' })} to={`/app/project/${project.id}/edit`}>Edit Project</Link>
-                  <Button variant="default" onClick={onMakePublic}>Make Public</Button>
-                  <p>Both of these options have not been implemented</p>
-                </CardContent>
-              </Card>
-            ) }
-          </div>
+          <SideBar authCtx={authCtx} project={project} />
         </div>
       </div>
     )
   }
+}
+
+function SideBar({ authCtx, project }: { authCtx: AuthCtx | undefined, project: Project }) {
+  const navigate = useNavigate()
+  const onMakePublic = async () => {
+    await axios.put(`/api/project/${project.id}`, { projectStatus: 'open' })
+    navigate(`/app/project/${project.id}`, { state: { toast: { code: 'madePublic' } } })
+  }
+  if (!authCtx?.isLoggedIn) {
+    // not logged in
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Something missing?</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            <Link to={loginLink} className="text-blue-700 hover:underline">Log in</Link>
+            {' '}
+            to find more options
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+  else if (authCtx?.user?.user.type === 'student') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Apply for this Project</CardTitle>
+          <CardDescription>Fill out the form below to submit your application</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-3">Please take your time to draft a good application. Once submitted, it cannot be edited.</p>
+          <ProjectApplicationForm project={project} authCtx={authCtx} />
+        </CardContent>
+      </Card>
+    )
+  }
+  else if (authCtx?.user?.user.kerberos === project.profKerberos && project.projectStatus === 'draft') {
+  // if prof is logged in and project is draft
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Draft project</CardTitle>
+          <CardDescription>This project is currently a draft. You can edit it or make it public</CardDescription>
+        </CardHeader>
+        <CardContent className="gap-3 flex flex-wrap">
+          <Link className={buttonVariants({ variant: 'default' })} to={`/app/project/${project.id}/edit`}>Edit Project</Link>
+          <Button variant="default" onClick={onMakePublic}>Make Public</Button>
+          <p>Both of these options have not been implemented</p>
+        </CardContent>
+      </Card>
+    )
+  }
+  return <h1>You should not be able to see this. If you do see it, please report a bug</h1>
 }

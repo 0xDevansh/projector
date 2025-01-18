@@ -16,7 +16,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         {project.projectStatus === 'draft' && <h3 className="text-red-600">Draft</h3>}
         {project.projectStatus === 'closed' && <h3 className="text-yellow-500">Closed</h3>}
         {project.projectStatus === 'ended' && <h3 className="text-red-600">Ended</h3>}
-        <CardTitle>{project.title}</CardTitle>
+        <CardTitle className="text-ellipsis overflow-hidden text-nowrap">{project.title}</CardTitle>
         <CardDescription>
           {`${project.prof?.user?.name}` || project.profKerberos}
         </CardDescription>

@@ -2,7 +2,7 @@ import type { ExtendedUser } from '../types.js'
 import axios from 'axios'
 import React, { createContext, useState } from 'react'
 
-interface AuthCtx {
+export interface AuthCtx {
   isLoggedIn: boolean
   user: ExtendedUser | undefined
   reloadAuth: () => void

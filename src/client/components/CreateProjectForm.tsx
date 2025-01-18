@@ -29,9 +29,8 @@ import {
 import {
   Calendar,
 } from './ui/calendar.js'
-import {
-  Checkbox,
-} from './ui/checkbox.js'
+
+import { Checkbox } from './ui/checkbox.js'
 import {
   Form,
   FormControl,
@@ -141,8 +140,8 @@ export default function MyForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl mx-auto py-10">
+        <h1 className="text-xl font-semibold">Basic details</h1>
         <FormField
           control={form.control}
           name="title"
@@ -171,7 +170,7 @@ export default function MyForm() {
               <FormControl>
                 <Textarea
                   placeholder=""
-                  className="resize-none"
+                  className="resize-y"
                   {...field}
                 />
               </FormControl>
@@ -224,7 +223,12 @@ export default function MyForm() {
                         <MultiSelectorList>
                           {
                             Object.keys(projectType).map(type => (
-                              <MultiSelectorItem key={type} value={type}>{projectType[type as ProjectType]}</MultiSelectorItem>
+                              <MultiSelectorItem
+                                key={type}
+                                value={type}
+                              >
+                                {projectType[type as ProjectType]}
+                              </MultiSelectorItem>
                             ))
                           }
                         </MultiSelectorList>
@@ -260,7 +264,12 @@ export default function MyForm() {
                         <MultiSelectorList>
                           {
                             Object.keys(projectDuration).map(duration => (
-                              <MultiSelectorItem key={duration} value={duration}>{projectDuration[duration as ProjectDuration]}</MultiSelectorItem>
+                              <MultiSelectorItem
+                                key={duration}
+                                value={duration}
+                              >
+                                {projectDuration[duration as ProjectDuration]}
+                              </MultiSelectorItem>
                             ))
                           }
                         </MultiSelectorList>
@@ -317,7 +326,48 @@ export default function MyForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="stipendProvided"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value as any}
+                  onCheckedChange={field.onChange}
 
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel required>Stipend Provided</FormLabel>
+
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="stipendAmount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Stipend Amount (in ₹)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder=""
+
+                  type="number"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>The amount of stipend provided (select No if none)</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <h1 className="text-xl font-semibold">Eligibility criteria</h1>
+        <p className="text-muted-foreground mt-0">Leaving a field blank assumes no restriction for that field</p>
         <FormField
           control={form.control}
           name="minYear"
@@ -382,7 +432,12 @@ export default function MyForm() {
                         <MultiSelectorList>
                           {
                             Object.keys(degreeName).map(degree => (
-                              <MultiSelectorItem key={degree} value={degree}>{degreeName[degree as DegreeCode]}</MultiSelectorItem>
+                              <MultiSelectorItem
+                                key={degree}
+                                value={degree}
+                              >
+                                {degreeName[degree as DegreeCode]}
+                              </MultiSelectorItem>
                             ))
                           }
                         </MultiSelectorList>
@@ -418,7 +473,12 @@ export default function MyForm() {
                         <MultiSelectorList>
                           {
                             Object.keys(deptName).map(dCode => (
-                              <MultiSelectorItem key={dCode} value={dCode}>{deptName[dCode as DeptCode]}</MultiSelectorItem>
+                              <MultiSelectorItem
+                                key={dCode}
+                                value={dCode}
+                              >
+                                {deptName[dCode as DeptCode]}
+                              </MultiSelectorItem>
                             ))
                           }
                         </MultiSelectorList>
@@ -443,7 +503,7 @@ export default function MyForm() {
               <FormControl>
                 <Textarea
                   placeholder=""
-                  className="resize-none"
+                  className="resize-y"
                   {...field}
                 />
               </FormControl>
@@ -452,6 +512,8 @@ export default function MyForm() {
             </FormItem>
           )}
         />
+
+        <h1 className="text-xl font-semibold">Additional information</h1>
 
         <FormField
           control={form.control}
@@ -462,11 +524,14 @@ export default function MyForm() {
               <FormControl>
                 <Textarea
                   placeholder=""
-                  className="resize-none"
+                  className="resize-y"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>The procedure followed to select final students from the applicants (optional)</FormDescription>
+              <FormDescription>
+                The procedure followed to select final students from the applicants
+                (optional)
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -481,51 +546,11 @@ export default function MyForm() {
               <FormControl>
                 <Textarea
                   placeholder=""
-                  className="resize-none"
+                  className="resize-y"
                   {...field}
                 />
               </FormControl>
               <FormDescription>What the students can expect to learn from this project (optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="stipendProvided"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value as any}
-                  onCheckedChange={field.onChange}
-
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel required>Stipend Provided</FormLabel>
-
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="stipendAmount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Stipend Amount (in ₹)</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The amount of stipend provided (select No if none)</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -121,7 +121,7 @@ export default function StudentOnboardingForm() {
                   <FormControl>
                     <Textarea
                       placeholder=""
-                      className="resize-none"
+                      className="resize-y"
                       {...field}
                     />
                   </FormControl>
