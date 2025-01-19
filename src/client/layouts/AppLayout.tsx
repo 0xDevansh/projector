@@ -11,7 +11,6 @@ export default function AppLayout() {
   const location = useLocation()
   const { toast } = useToast()
   useEffect(() => {
-    console.log('AppLayout useEffect called!')
     // if student or prof is not defined, go to onboarding
     if (!authCtx || !authCtx.isLoggedIn || !authCtx.user) {
       return
@@ -29,6 +28,9 @@ export default function AppLayout() {
           break
         case 'madePublic':
           toast({ title: 'Made project public' })
+          break
+        case 'projectClosed':
+          toast({ title: 'Closed the project' })
           break
       }
       location.state.toast = undefined

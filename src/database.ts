@@ -72,6 +72,9 @@ export async function createOrUpdateUser(data: { email?: string, name?: string, 
 }
 
 export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, cgpa: string, bio?: string, resumePath?: string) {
+  const user = await userRepo.findOneBy({ kerberos })
+  if (!user)
+    return
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(Student)
@@ -81,20 +84,23 @@ export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, c
       degree,
       cgpa,
       resumePath,
-      user: { kerberos },
+      user,
     }])
     .orUpdate(['bio', 'degree', 'cgpa', 'resumePath'], ['kerberos'])
     .execute()
 }
 
 export async function addOrUpdateProf(data: { kerberos: string, areasOfResearch?: string }) {
+  const user = await userRepo.findOneBy({ kerberos: data.kerberos })
+  if (!user)
+    return
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(Professor)
     .values([{
       kerberos: data.kerberos,
       areasOfResearch: data.areasOfResearch,
-      user: { kerberos: data.kerberos },
+      user,
     }])
     .orUpdate(['areasOfResearch'], ['kerberos'])
     .execute()
@@ -194,7 +200,12 @@ export async function addOrUpdateApplication(data: { projectId: string, studentK
 }
 
 export async function getApplications(projectId: string, studentKerberos?: string) {
+  let qBuilder = applicationRepo.createQueryBuilder('application')
+    // .select('*')
+    .leftJoinAndSelect('application.student', 'student')
+    .leftJoinAndSelect('student.user', 'studentUser')
+    .where('projectId = :projectId', { projectId })
   if (studentKerberos)
-    return await applicationRepo.findBy({ projectId, studentKerberos })
-  return await applicationRepo.findBy({ projectId })
+    qBuilder = qBuilder.andWhere('studentKerberos = :studentKerberos', { studentKerberos })
+  return await qBuilder.getMany()
 }

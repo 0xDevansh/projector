@@ -19,7 +19,7 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
   return (
     <React.StrictMode>
       <SWRConfig value={{
-        refreshInterval: 5000,
+        refreshInterval: 10000,
         fetcher: (url: string) => axios.get(url).then(res => res.data),
       }}
       >

@@ -1,3 +1,4 @@
+import type { Application } from '../../models/Application.js'
 import type { Project } from '../../models/ProfessorProject.js'
 import type {
   DegreeCode,
@@ -8,7 +9,17 @@ import type {
 import type { AuthCtx } from '../AuthContext.js'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { BanknoteIcon, BookCheckIcon, BriefcaseIcon, CalendarIcon, ClockIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
+import {
+  BanknoteIcon,
+  BookCheckIcon,
+  BriefcaseIcon,
+  CalendarIcon,
+  CircleHelpIcon,
+  ClockIcon,
+  GraduationCapIcon,
+  SchoolIcon,
+  UserIcon,
+} from 'lucide-react'
 import React, { useContext } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
@@ -20,10 +31,16 @@ import { Badge, BadgeWithTooltip } from '../components/ui/badge.js'
 import { Button, buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table.js'
 import { loginLink } from '../layouts/Header.js'
 import NotFound from './NotFound.js'
-
-const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 export default function ProjectDetails() {
   const { id } = useParams()
@@ -32,7 +49,9 @@ export default function ProjectDetails() {
   }
 
   const authCtx = useContext(AuthContext)
-  const { data, error, isLoading } = useSWR(`/api/project/${id}`, fetcher)
+  const { data, error, isLoading, mutate } = useSWR(`/api/project/${id}`)
+  const navigate = useNavigate()
+
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
@@ -41,6 +60,7 @@ export default function ProjectDetails() {
   }
   else {
     const project = data.data as Project
+    // const { apps, error, isLoading } = useSWR(`/api/project/${id}/applications`)
     // if project is not open, only prof can view it
     if (project.projectStatus !== 'open') {
       if (!authCtx?.isLoggedIn) {
@@ -51,10 +71,28 @@ export default function ProjectDetails() {
       }
     }
 
+    const onMakePublic = async () => {
+      await axios.put(`/api/project/${project.id}`, { projectStatus: 'open' })
+      await mutate()
+      navigate(`/app/project/${project.id}`, { state: { toast: { code: 'madePublic' } } })
+    }
+    const onChangeStatus = async () => {
+      if (project.projectStatus === 'open') {
+        await axios.put(`/api/project/${project.id}`, { projectStatus: 'closed' })
+        await mutate()
+        navigate(`/app/project/${project.id}`, { state: { toast: { code: 'projectClosed' } } })
+      }
+      else {
+        await axios.put(`/api/project/${project.id}`, { projectStatus: 'open' })
+        await mutate()
+        navigate(`/app/project/${project.id}`, { state: { toast: { code: 'madePublic' } } })
+      }
+    }
+
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8 px-4 flex-col gap-4">
         <h1 className="text-4xl font-bold mb-6">{project.title}</h1>
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
@@ -62,6 +100,13 @@ export default function ProjectDetails() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
+                  <div className="flex items-center gap-2">
+                    <CircleHelpIcon className="w-5 h-5 text-muted-foreground" />
+                    <span className="font-semibold">Status:</span>
+                    { project.projectStatus === 'open' && <span className="text-green-900">Open to applications</span>}
+                    { project.projectStatus === 'closed' && <span className="text-red-800">Closed</span>}
+                    { project.projectStatus === 'draft' && <span className="text-gray-700">Draft</span>}
+                  </div>
                   <div className="flex items-center gap-2">
                     <GraduationCapIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Professor:</span>
@@ -189,19 +234,23 @@ export default function ProjectDetails() {
               </CardContent>
             </Card>
           </div>
-          <SideBar authCtx={authCtx} project={project} />
+          <SideBar onMakePublic={onMakePublic} onChangeStatus={onChangeStatus} authCtx={authCtx} project={project} />
         </div>
+        {authCtx?.user?.type === 'prof' && authCtx?.user?.user.kerberos === project.profKerberos && <ApplicationsCard project={project} />}
       </div>
     )
   }
 }
 
-function SideBar({ authCtx, project }: { authCtx: AuthCtx | undefined, project: Project }) {
-  const navigate = useNavigate()
-  const onMakePublic = async () => {
-    await axios.put(`/api/project/${project.id}`, { projectStatus: 'open' })
-    navigate(`/app/project/${project.id}`, { state: { toast: { code: 'madePublic' } } })
+function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: AuthCtx | undefined, project: Project, onMakePublic: () => void, onChangeStatus: () => void }) {
+  const { data, error, isLoading } = useSWR(`/api/project/${project.id}/applications`)
+  if (isLoading) {
+    return <h1 className="text-lg">Loading...</h1>
   }
+  else if (error || !data?.data) {
+    return <h1 className="text-lg">There was an unexpected error</h1>
+  }
+  const applications = data.data as Application[]
   if (!authCtx?.isLoggedIn) {
     // not logged in
     return (
@@ -220,34 +269,130 @@ function SideBar({ authCtx, project }: { authCtx: AuthCtx | undefined, project: 
     )
   }
   else if (authCtx?.user?.user.type === 'student') {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Apply for this Project</CardTitle>
-          <CardDescription>Fill out the form below to submit your application</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-3">Please take your time to draft a good application. Once submitted, it cannot be edited.</p>
-          <ProjectApplicationForm project={project} authCtx={authCtx} />
-        </CardContent>
-      </Card>
-    )
+    if (!applications.length) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Apply for this Project</CardTitle>
+            <CardDescription>Fill out the form below to submit your application</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">Please take your time to draft a good application. Once submitted, it cannot be edited.</p>
+            <ProjectApplicationForm project={project} authCtx={authCtx} />
+          </CardContent>
+        </Card>
+      )
+    }
+    else {
+      const app = applications[0]
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl mt-6">You have applied for this project</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-md mb-3">
+              <span className="font-semibold">Applied on: </span>
+              {dayjs(app.createdAt).format('DD MMM YYYY')}
+            </p>
+          </CardContent>
+        </Card>
+      )
+    }
   }
-  else if (authCtx?.user?.user.kerberos === project.profKerberos && project.projectStatus === 'draft') {
+  else if (authCtx?.user?.user.kerberos === project.profKerberos) {
   // if prof is logged in and project is draft
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Draft project</CardTitle>
-          <CardDescription>This project is currently a draft. You can edit it or make it public</CardDescription>
-        </CardHeader>
-        <CardContent className="gap-3 flex flex-wrap">
-          <Link className={buttonVariants({ variant: 'default' })} to={`/app/project/${project.id}/edit`}>Edit Project</Link>
-          <Button variant="default" onClick={onMakePublic}>Make Public</Button>
-          <p>Both of these options have not been implemented</p>
-        </CardContent>
-      </Card>
-    )
+    if (project.projectStatus === 'draft') {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Draft project</CardTitle>
+            <CardDescription>This project is currently a draft. You can edit it or make it public</CardDescription>
+          </CardHeader>
+          <CardContent className="gap-3 flex flex-col">
+            <Link className={buttonVariants({ variant: 'outline' })} to={`/app/project/${project.id}`}>Edit Project</Link>
+            <Button variant="default" onClick={onMakePublic}>Make Public</Button>
+            <p>Edit form coming soon...</p>
+          </CardContent>
+        </Card>
+      )
+    }
+    else {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Professor Options</CardTitle>
+          </CardHeader>
+          <CardContent className="gap-3 flex flex-col">
+            <h1 className="text-lg font-semibold">
+              Status:
+              {' '}
+              {project.projectStatus}
+            </h1>
+            { project.projectStatus === 'open' && <p>This project is accepting new applications</p>}
+            { project.projectStatus === 'closed' && <p>This project is not accepting new applications</p>}
+            <Button
+              onClick={onChangeStatus}
+            >
+              {project.projectStatus === 'open' ? 'Close Project' : 'Open for applications'}
+            </Button>
+          </CardContent>
+        </Card>
+      )
+    }
   }
-  return <h1>You should not be able to see this. If you do see it, please report a bug</h1>
+  return <span className="hidden">Nothing</span>
+}
+
+function ApplicationsCard({ project }: { project: Project }) {
+  const { data, error, isLoading } = useSWR(`/api/project/${project.id}/applications`)
+  if (isLoading) {
+    return <h1 className="text-lg">Loading...</h1>
+  }
+  else if (error || !data?.data) {
+    return <h1 className="text-lg">There was an unexpected error</h1>
+  }
+  const applications = data.data as Application[]
+  console.log(applications)
+  return (
+    <Card className="mt-4">
+      <CardHeader>
+        <CardTitle className="text-2xl">Applications</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="font-semibold">
+          Received
+          {' '}
+          {applications.length}
+          {' '}
+          applications
+        </p>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>CGPA</TableHead>
+              <TableHead>Applied on</TableHead>
+              <TableHead>More details</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {applications.map(app => (
+              <TableRow key={app.id}>
+                <TableCell className="font-medium">{app.student.user.name}</TableCell>
+                <TableCell>{deptName[app.student.user.deptCode as DeptCode]}</TableCell>
+                <TableCell>{app.student.cgpa}</TableCell>
+                <TableCell>{dayjs(app.createdAt).format('DD MMM YYYY')}</TableCell>
+                <div className="py-1">
+                  <Link className={buttonVariants({ variant: 'outline' })} to={`/app/project/${project.id}/applications/${app.id}`}>Show Application</Link>
+                </div>
+                <TableCell></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
 }

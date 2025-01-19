@@ -9,7 +9,6 @@ import {
   getApplications,
   getProjectById,
   getProjects,
-  getUser,
   updateProject,
 } from '../database.js'
 import { PartialDeep, ProjectFilterType, ProjectTypebox } from '../types.js'
@@ -32,8 +31,7 @@ async function projectPlugin(server: FastifyInstance) {
     const project = await getProjectById(request.params.id)
     if (!project)
       return await reply.code(400).send({ data: null, error: null })
-    const profUser = await getUser(project.profKerberos)
-    await reply.code(200).send({ error: null, data: { ...project, profUser } })
+    await reply.code(200).send({ error: null, data: project })
   })
 
   server.put('/api/project/:id', {
@@ -133,6 +131,32 @@ async function projectPlugin(server: FastifyInstance) {
     }
 
     await addOrUpdateApplication({ projectId: request.params.id, studentKerberos: kerberos, ...request.body })
+  })
+
+  server.get('/api/project/:id/applications', {
+    schema: {
+      params: Type.Object({
+        id: Type.String({ minLength: 1 }),
+      }),
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
+    // fetches all applications if prof, else only the student's application
+    if (!request.params.id) {
+      await reply.code(400).send({ data: null, error: 'id not found' })
+      return
+    }
+    if (!request.extendedUser) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    if (request.extendedUser.type === 'prof') {
+      const applications = await getApplications(request.params.id)
+      await reply.code(200).send({ error: null, data: applications })
+    }
+    else if (request.extendedUser.type === 'student') {
+      const applications = await getApplications(request.params.id, request.extendedUser.user.kerberos)
+      await reply.code(200).send({ error: null, data: applications })
+    }
   })
 }
 

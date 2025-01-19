@@ -104,7 +104,7 @@ const formSchema = z.object({
   }
 })
 
-export default function MyForm() {
+export default function CreateProjectForm() {
   const authCtx = useContext(AuthContext)
   if (!authCtx?.user || authCtx.user.type !== 'prof') {
     return <p className="text-lg">Must be logged in as prof to see this form</p>
@@ -130,6 +130,7 @@ export default function MyForm() {
       else {
         console.log(res.data)
         const id = res.data.data
+        localStorage.removeItem('create_project')
         navigate(id ? `/app/project/${id}` : '/app/', { state: { toast: { code: 'projectCreated' } } })
       }
     }
