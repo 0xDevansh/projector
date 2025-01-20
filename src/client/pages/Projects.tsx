@@ -16,6 +16,7 @@ export default function Projects({ profProjects }: { profProjects?: boolean }) {
     console.log(projects)
     return (
       <div className="projects items-stretch">
+        <title>Projects - Projects Portal</title>
         {projects.map((proj: Project) => <ProjectCard project={proj} key={proj.id} />)}
         {projects.length === 0 && <h1 className="text-lg">No open projects found</h1>}
       </div>

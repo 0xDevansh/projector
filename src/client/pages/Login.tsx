@@ -7,6 +7,7 @@ const loginLink = `https://oauthdevclub.vercel.app/signin?client_id=mHuhtM4zb6Yl
 export function Login() {
   return (
     <div className="login">
+      <title>Login - Projects Portal</title>
       <Card className="w-[350px] mx-auto my-40wh">
         <CardHeader>
           <CardTitle>Log in</CardTitle>

@@ -6,6 +6,7 @@ import { Type } from '@sinclair/typebox'
 import {
   addOrUpdateApplication,
   addProject,
+  getApplicationById,
   getApplications,
   getProjectById,
   getProjects,
@@ -157,6 +158,35 @@ async function projectPlugin(server: FastifyInstance) {
       const applications = await getApplications(request.params.id, request.extendedUser.user.kerberos)
       await reply.code(200).send({ error: null, data: applications })
     }
+  })
+
+  server.get('/api/applications/:id', {
+    schema: {
+      params: Type.Object({
+        id: Type.String({ minLength: 1 }),
+      }),
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
+    if (!request.params.id) {
+      await reply.code(400).send({ data: null, error: 'id not found' })
+      return
+    }
+    if (request.extendedUser?.type === 'student') {
+      await reply.code(400).send({ data: null, error: 'unauthorised' })
+      return
+    }
+
+    const application = await getApplicationById(request.params.id)
+    if (!application) {
+      await reply.code(400).send({ data: null, error: 'application not found' })
+      return
+    }
+
+    if (application.project.profKerberos !== request.extendedUser?.user.kerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    await reply.code(200).send({ error: null, data: application })
   })
 }
 

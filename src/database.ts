@@ -209,3 +209,7 @@ export async function getApplications(projectId: string, studentKerberos?: strin
     qBuilder = qBuilder.andWhere('studentKerberos = :studentKerberos', { studentKerberos })
   return await qBuilder.getMany()
 }
+
+export function getApplicationById(id: string) {
+  return applicationRepo.findOneBy({ id })
+}

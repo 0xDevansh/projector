@@ -8,6 +8,7 @@ import CreateProjectForm from './components/CreateProjectForm.js'
 import { TooltipProvider } from './components/ui/tooltip.js'
 import AppLayout from './layouts/AppLayout.js'
 import { About } from './pages/About.js'
+import ApplicationDetails from './pages/ApplicationDetails.js'
 import { Home } from './pages/Home.js'
 import { Login } from './pages/Login.js'
 import NotFound from './pages/NotFound.js'
@@ -35,6 +36,7 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
                   <Route path="projects" element={<Projects />} />
                   <Route path="createproject" element={<CreateProjectForm />} />
                   <Route path="project/:id" element={<ProjectDetails />} />
+                  <Route path="project/:projectId/applications/:applicationId" element={<ApplicationDetails />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

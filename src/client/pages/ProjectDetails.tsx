@@ -40,6 +40,7 @@ import {
   TableRow,
 } from '../components/ui/table.js'
 import { loginLink } from '../layouts/Header.js'
+import { cn } from '../utils'
 import NotFound from './NotFound.js'
 
 export default function ProjectDetails() {
@@ -49,8 +50,8 @@ export default function ProjectDetails() {
   }
 
   const authCtx = useContext(AuthContext)
-  const { data, error, isLoading, mutate } = useSWR(`/api/project/${id}`)
   const navigate = useNavigate()
+  const { data, error, isLoading, mutate } = useSWR(`/api/project/${id}`)
 
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
@@ -91,7 +92,8 @@ export default function ProjectDetails() {
 
     return (
       <div className="container mx-auto py-8 px-4 flex-col gap-4">
-        <h1 className="text-4xl font-bold mb-6">{project.title}</h1>
+        <title>Project Details - Projects Portal</title>
+        <h1 className="text-3xl font-bold mb-6">{project.title}</h1>
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card>
@@ -384,10 +386,7 @@ function ApplicationsCard({ project }: { project: Project }) {
                 <TableCell>{deptName[app.student.user.deptCode as DeptCode]}</TableCell>
                 <TableCell>{app.student.cgpa}</TableCell>
                 <TableCell>{dayjs(app.createdAt).format('DD MMM YYYY')}</TableCell>
-                <div className="py-1">
-                  <Link className={buttonVariants({ variant: 'outline' })} to={`/app/project/${project.id}/applications/${app.id}`}>Show Application</Link>
-                </div>
-                <TableCell></TableCell>
+                <TableCell><Link className={cn(buttonVariants({ variant: 'outline' }), 'py-4')} to={`/app/project/${project.id}/applications/${app.id}`}>Show Application</Link></TableCell>
               </TableRow>
             ))}
           </TableBody>
