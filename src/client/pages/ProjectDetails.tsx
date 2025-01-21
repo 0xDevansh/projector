@@ -40,7 +40,7 @@ import {
   TableRow,
 } from '../components/ui/table.js'
 import { loginLink } from '../layouts/Header.js'
-import { cn } from '../utils'
+import { cn } from '../utils.js'
 import NotFound from './NotFound.js'
 
 export default function ProjectDetails() {
@@ -328,16 +328,20 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
           <CardContent className="gap-3 flex flex-col">
             <h1 className="text-lg font-semibold">
               Status:
-              {' '}
-              {project.projectStatus}
+              <span className="font-normal">
+                {' '}
+                {project.projectStatus}
+              </span>
             </h1>
-            { project.projectStatus === 'open' && <p>This project is accepting new applications</p>}
-            { project.projectStatus === 'closed' && <p>This project is not accepting new applications</p>}
+            {project.projectStatus === 'open' && <p>This project is accepting new applications</p>}
+            {project.projectStatus === 'closed' && <p>This project is not accepting new applications</p>}
             <Button
               onClick={onChangeStatus}
             >
               {project.projectStatus === 'open' ? 'Close Project' : 'Open for applications'}
             </Button>
+            <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to={`/app/project/${project.id}/edit`}>Edit Project details</Link>
+
           </CardContent>
         </Card>
       )

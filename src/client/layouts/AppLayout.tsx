@@ -21,10 +21,24 @@ export default function AppLayout() {
     if ((!studentExists && !profExists) && location.pathname !== '/app/onboarding') {
       navigate('/app/onboarding')
     }
+    // perform a custom action
+    if (location.state?.action) {
+      switch (location.state.action) {
+        case 'clearStorage':
+          localStorage.clear()
+          location.state.action = undefined
+          break
+      }
+      location.state.action = undefined
+    }
+    // show a toast
     if (location.state?.toast?.code) {
       switch (location.state.toast.code) {
         case 'projectCreated':
           toast({ title: 'Project created successfully!' })
+          break
+        case 'projectUpdated':
+          toast({ title: 'Project updated successfully!' })
           break
         case 'madePublic':
           toast({ title: 'Made project public' })

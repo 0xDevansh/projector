@@ -4,11 +4,12 @@ import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { SWRConfig } from 'swr'
 import { AuthProvider } from './AuthContext.js'
-import CreateProjectForm from './components/CreateProjectForm.js'
 import { TooltipProvider } from './components/ui/tooltip.js'
 import AppLayout from './layouts/AppLayout.js'
 import { About } from './pages/About.js'
 import ApplicationDetails from './pages/ApplicationDetails.js'
+import { CreateProject } from './pages/CreateProject.js'
+import { EditProject } from './pages/EditProject.js'
 import { Home } from './pages/Home.js'
 import { Login } from './pages/Login.js'
 import NotFound from './pages/NotFound.js'
@@ -34,8 +35,9 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
                   <Route path="login" element={<Login />} />
                   <Route path="onboarding" element={<Onboarding />} />
                   <Route path="projects" element={<Projects />} />
-                  <Route path="createproject" element={<CreateProjectForm />} />
+                  <Route path="projects/create" element={<CreateProject />} />
                   <Route path="project/:id" element={<ProjectDetails />} />
+                  <Route path="project/:id/edit" element={<EditProject />} />
                   <Route path="project/:projectId/applications/:applicationId" element={<ApplicationDetails />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>

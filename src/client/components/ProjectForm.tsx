@@ -1,5 +1,6 @@
 'use client'
 
+import type { Project } from '../../models/ProfessorProject.js'
 import type { DegreeCode, DeptCode, ProjectDuration, ProjectType } from '../../types.js'
 import {
   zodResolver,
@@ -19,18 +20,18 @@ import { useNavigate } from 'react-router'
 import * as z from 'zod'
 import { degreeName, deptName, projectDuration, projectType } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
+import { useToast } from '../hooks/use-toast.js'
 import usePersist from '../hooks/usePersist.js'
 import {
   cn,
 } from '../utils.js'
+
 import {
   Button,
 } from './ui/button.js'
 import {
   Calendar,
 } from './ui/calendar.js'
-
-import { Checkbox } from './ui/checkbox.js'
 import {
   Form,
   FormControl,
@@ -56,6 +57,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from './ui/popover.js'
+import { RadioGroup, RadioGroupItem } from './ui/radio-group.js'
 import {
   Textarea,
 } from './ui/textarea.js'
@@ -78,10 +80,10 @@ const formSchema = z.object({
   prerequisites: z.string().optional(),
   selectionProcedure: z.string().optional(),
   learningOutcomes: z.string().optional(),
-  stipendProvided: z.boolean(),
+  stipendProvided: z.string(),
   stipendAmount: z.coerce.number().optional(),
 }).superRefine(({ stipendProvided, stipendAmount, projectType, duration }, ctx) => {
-  if (stipendProvided && !stipendAmount) {
+  if (stipendProvided === 'yes' && !stipendAmount) {
     ctx.addIssue({
       message: 'Stipend amount must be greater than 0',
       path: ['stipendAmount'],
@@ -104,34 +106,61 @@ const formSchema = z.object({
   }
 })
 
-export default function CreateProjectForm() {
+export default function ProjectForm({ formAction, project }: { formAction: 'create' | 'edit', project?: Project }) {
   const authCtx = useContext(AuthContext)
   if (!authCtx?.user || authCtx.user.type !== 'prof') {
     return <p className="text-lg">Must be logged in as prof to see this form</p>
   }
+  if (formAction === 'edit' && !project) {
+    return <p className="text-lg text-red-800">Error: Project not found</p>
+  }
+  const { toast } = useToast()
   const navigate = useNavigate()
   const form = useForm < z.infer < typeof formSchema >> ({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      projectType: [],
-      duration: [],
-      eligibleDegrees: [],
-      eligibleDepartments: [],
-    },
+    defaultValues: formAction === 'create'
+      ? {
+          projectType: [],
+          duration: [],
+          eligibleDegrees: [],
+          eligibleDepartments: [],
+        }
+      : {
+          ...project,
+          stipendProvided: project?.stipendProvided ? 'yes' : 'no',
+          minYear: project?.minYear || undefined,
+          minCgpa: project?.minCgpa || undefined,
+          prerequisites: project?.prerequisites || undefined,
+          selectionProcedure: project?.selectionProcedure || undefined,
+          learningOutcomes: project?.learningOutcomes || undefined,
+        },
   })
-  usePersist('create_project', { watch: form.watch, setValue: form.setValue, storage: window.localStorage })
+  if (formAction === 'create')
+    usePersist('create_project', { watch: form.watch, setValue: form.setValue, storage: window.localStorage })
 
   async function onSubmit(values: z.infer < typeof formSchema >) {
     try {
-      const res = await axios.post('/api/project', { ...values, projectStatus: 'draft', profKerberos: authCtx?.user?.user.kerberos || '' }, { headers: { 'Content-Type': 'application/json' } })
-      if (res.status !== 200) {
-        console.error('Failed to submit form') // TODO replace this with a toast
+      if (formAction === 'create') {
+        const res = await axios.post('/api/project', { ...values, stipendProvided: values.stipendProvided === 'yes', projectStatus: 'draft', profKerberos: authCtx?.user?.user.kerberos || '' }, { headers: { 'Content-Type': 'application/json' } })
+        if (res.status !== 200) {
+          toast({ title: 'Error', description: 'Unexpected error while submitting form' })
+        }
+        else {
+          const id = res.data.data
+          navigate(id ? `/app/project/${id}` : '/app/', { state: { toast: { code: 'projectCreated' }, action: 'clearStorage' } })
+        }
       }
       else {
-        console.log(res.data)
-        const id = res.data.data
-        localStorage.removeItem('create_project')
-        navigate(id ? `/app/project/${id}` : '/app/', { state: { toast: { code: 'projectCreated' } } })
+        // update form
+        if (!project?.id)
+          throw new Error('cannot find projectId')
+        const res = await axios.put(`/api/project/${project?.id}`, { ...values, stipendProvided: values.stipendProvided === 'yes' }, { headers: { 'Content-Type': 'application/json' } })
+        if (res.status !== 200) {
+          toast({ title: 'Error', description: 'Unexpected error while submitting form' })
+        }
+        else {
+          navigate(`/app/project/${project?.id}`, { state: { toast: { code: 'projectUpdated' } } })
+        }
       }
     }
     catch (error) {
@@ -141,7 +170,7 @@ export default function CreateProjectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl mx-auto py-10">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mx-auto py-10">
         <h1 className="text-xl font-semibold">Basic details</h1>
         <FormField
           control={form.control}
@@ -331,19 +360,33 @@ export default function CreateProjectForm() {
           control={form.control}
           name="stipendProvided"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormItem className="space-y-3">
+              <FormLabel required>Stipend Provided</FormLabel>
               <FormControl>
-                <Checkbox
-                  checked={field.value as any}
-                  onCheckedChange={field.onChange}
-
-                />
+                <RadioGroup
+                  defaultValue={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="yes" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Yes
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="no" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      No
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel required>Stipend Provided</FormLabel>
-
-                <FormMessage />
-              </div>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -362,7 +405,7 @@ export default function CreateProjectForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>The amount of stipend provided (select No if none)</FormDescription>
+              <FormDescription>The amount of stipend provided, if you answered Yes to the previous question</FormDescription>
               <FormMessage />
             </FormItem>
           )}

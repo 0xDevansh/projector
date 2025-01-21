@@ -5,11 +5,10 @@ import { Calendar, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
 import React from 'react'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
-import { deptName } from '../../types'
-import { degreeName } from '../../types.js'
+import { degreeName, deptName } from '../../types.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.js'
-import { Separator } from '../components/ui/separator'
-import NotFound from './NotFound'
+import { Separator } from '../components/ui/separator.js'
+import NotFound from './NotFound.js'
 
 export default function ApplicationDetails() {
   const { projectId, applicationId } = useParams()
