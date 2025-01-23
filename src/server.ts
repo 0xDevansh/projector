@@ -2,10 +2,13 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import type { ExtendedUser } from './types.js'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { argv, env, exit } from 'node:process'
+import { fileURLToPath } from 'node:url'
 import cookie from '@fastify/cookie'
 import helmet from '@fastify/helmet'
+import multipart from '@fastify/multipart'
+import fastifyStatic from '@fastify/static'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
@@ -13,7 +16,6 @@ import { getAuthUser } from './authHook.js'
 import { initDatabase } from './database.js'
 import apiPlugin from './routes/api.js'
 import 'reflect-metadata'
-
 // required for extendedUser
 declare module 'fastify' {
   interface FastifyRequest {
@@ -41,17 +43,26 @@ const devLogger = {
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
   = fastify({ logger: env.ENV === 'dev' ? devLogger : false }).withTypeProvider<TypeBoxTypeProvider>()
 
-server.decorateRequest('extendedUser', null)
-server.addHook('preHandler', async (request, _reply) => {
-  request.extendedUser = await getAuthUser(request.cookies.token)
-})
-
+await server.register(multipart)
+// await server.register(multer.contentParser)
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
 await server.register(cookie, {
   secret: env.COOKIE_SECRET,
   parseOptions: {
     httpOnly: true,
   },
+})
+await server.register(fastifyStatic, {
+  root: resolve(dirname(fileURLToPath(import.meta.url)), '../static'),
+  prefix: '/static',
+})
+server.decorateRequest('extendedUser', null)
+server.addHook('preHandler', (request, _reply, done) => {
+  // request.extendedUser = await
+  getAuthUser(request.cookies.token).then((user) => {
+    request.extendedUser = user
+    done(undefined)
+  })
 })
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, '../'),

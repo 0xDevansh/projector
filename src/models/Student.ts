@@ -19,7 +19,7 @@ export class Student {
   @Column('text', { nullable: true })
   resumePath: string
 
-  @OneToOne(() => User, { eager: true })
+  @OneToOne(() => User, { eager: true, onUpdate: 'NO ACTION' })
   @JoinColumn()
   user: User
 }

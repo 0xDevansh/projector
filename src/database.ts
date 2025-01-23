@@ -35,6 +35,10 @@ export async function initDatabase() {
   console.log('Initialized database')
 }
 
+export async function getStudent(kerberos: string) {
+  return await studentRepo.findOneBy({ kerberos })
+}
+
 export async function getExtendedUserByKerberos(kerberos: string): Promise<ExtendedUser | null> {
   const user = await userRepo.findOneBy({ kerberos })
   if (!user)
@@ -212,4 +216,12 @@ export async function getApplications(projectId: string, studentKerberos?: strin
 
 export function getApplicationById(id: string) {
   return applicationRepo.findOneBy({ id })
+}
+
+export async function updateResumePath(kerberos: string, resumePath: string) {
+  await AppDataSource.createQueryBuilder()
+    .update(Student)
+    .set({ resumePath })
+    .where('kerberos = :kerberos', { kerberos })
+    .execute()
 }

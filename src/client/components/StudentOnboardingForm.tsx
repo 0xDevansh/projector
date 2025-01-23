@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { degreeName, deptName } from '../../types.js'
+
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import { loginLink } from '../layouts/Header.js'
@@ -21,7 +22,19 @@ const formSchema = z.object({
   cgpa: z.string().refine((v) => {
     return !Number.isNaN(Number.parseFloat(v)) && v.includes('.') && v.split('.')[1].length === 2
   }, { message: 'Must have 2 decimal places' }),
-  resume: z.instanceof(File).optional(),
+  resume: z.instanceof(FileList).optional().refine((fileList) => {
+    if (!fileList || fileList.length === 0)
+      return true
+    return fileList.length === 1
+  }, { message: 'Only one file is allowed' }).refine((fileList) => {
+    if (!fileList || fileList.length === 0)
+      return true
+    return fileList[0].type === 'application/pdf'
+  }, { message: 'Only PDF files are allowed' }).refine((fileList) => {
+    if (!fileList || fileList.length === 0)
+      return true
+    return fileList[0].size <= 1024 * 1024 * 3
+  }, { message: 'File is larger than 2mb' }),
 })
 
 export default function StudentOnboardingForm() {
@@ -37,19 +50,33 @@ export default function StudentOnboardingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   })
+  const fileRef = form.register('resume')
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!authContext?.user) {
       navigate('/app')
       return
     }
+    console.log(values)
     // Send to server
-    const res = await axios.post('/api/user/student', { name: authContext.user.user.name, kerberos: authContext.user.user.email.split('@')[0], ...values }, { headers: { 'Content-Type': 'application/json' } })
-    if (res.status !== 200) {
+    const mainRes = await axios.post('/api/user/student', { ...values, name: authContext.user.user.name, kerberos: authContext.user.user.email.split('@')[0], resume: undefined }, { headers: { 'content-type': 'application/json' } })
+    if (mainRes.status !== 200) {
       console.error('Failed to submit form')
       toast({ title: 'Failed to submit form', variant: 'destructive' })
       return
     }
     await authContext?.reloadAuth()
+    if (values.resume?.length) {
+      const formData = new FormData()
+      formData.append('resume', values.resume[0], `${authContext?.user?.user.kerberos}.pdf`)
+
+      // const resumeRes = await axios.post('/api/user/resume', formData, { headers: { 'content-type': 'multipart/form-data' } })
+      const resumeRes = await fetch('/api/user/resume', { method: 'POST', body: formData })
+      if (resumeRes.status !== 200) {
+        console.error('Failed to upload resume')
+        toast({ title: 'Failed to submit form', variant: 'destructive' })
+        return
+      }
+    }
     navigate('/app')
   }
 
@@ -108,32 +135,6 @@ export default function StudentOnboardingForm() {
           )}
         />
 
-        <div className="grid grid-cols-12 gap-4">
-
-          <div className="col-span-4">
-
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder=""
-                      className="resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>Your publicly visible description (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-        </div>
-
         <FormField
           control={form.control}
           name="cgpa"
@@ -153,8 +154,51 @@ export default function StudentOnboardingForm() {
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-12 gap-4">
+
+          <div className="col-span-4">
+
+            <FormField
+              control={form.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bio</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder=""
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>Your publicly visible description (optional)</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+        </div>
+
+        <FormField
+          control={form.control}
+          name="resume"
+          render={() => {
+            return (
+              <FormItem>
+                <FormLabel>Resume</FormLabel>
+                <FormControl>
+                  <Input type="file" placeholder="shadcn" {...fileRef} />
+                </FormControl>
+                <FormDescription>Upload a PDF, up to 2mb</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
+        />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
+
   )
 }

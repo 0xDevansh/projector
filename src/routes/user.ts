@@ -1,10 +1,48 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import type { DegreeCode, DeptCode } from '../types.js'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Type } from '@sinclair/typebox'
-import { addOrUpdateProf, addOrUpdateStudent, createOrUpdateUser, getExtendedUserByKerberos } from '../database.js'
+import multer from 'fastify-multer'
+import {
+  addOrUpdateProf,
+  addOrUpdateStudent,
+  createOrUpdateUser,
+  getExtendedUserByKerberos,
+  getStudent,
+  updateResumePath,
+} from '../database.js'
 import { Nullable, ResponseType } from './auth.js'
 
-// handles routes /api/user/:kerberos
+// handles routes /api/user/ and other stuff
+
+// file uploads handler
+const storage = multer.diskStorage({
+  filename(req, file, callback) {
+    callback(null, `${req.extendedUser?.user?.kerberos}_${Date.now()}.pdf`)
+  },
+  destination: resolve(dirname(fileURLToPath(import.meta.url)), '../../static/resume'),
+})
+const uploadConfig = multer({
+  storage,
+  limits: {
+    parts: 1,
+    fileSize: 1024 * 1024 * 2, // 2mb
+  },
+  fileFilter: (req, file, callback) => {
+    // user must be logged in
+    if (!req.extendedUser?.user) {
+      callback(null, false)
+    }
+    else if (file.mimetype !== 'application/pdf') {
+      callback(null, false)
+    }
+    else {
+      callback(null, true)
+    }
+  },
+})
+
 export const UserType = Type.Object({
   email: Type.String(),
   name: Type.String(),
@@ -91,6 +129,47 @@ async function userPlugin(server: FastifyInstance) {
     const { kerberos, areasOfResearch } = request.body
     await addOrUpdateProf({ kerberos, areasOfResearch })
     await reply.code(200).send({ error: null, data: null })
+  })
+
+  server.post('/api/user/resume', {
+    preHandler: uploadConfig.single('resume'),
+  }, async (request, reply) => {
+    if (!request.extendedUser?.user) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    // @ts-expect-error TS says file.filename doesn't exist but it works when compiled
+    await updateResumePath(request.extendedUser.user.kerberos, request.file.filename)
+    await reply.code(200).send({ error: null, data: null })
+  })
+
+  server.get('/api/user/:kerberos/resume', {
+    schema: {
+      params: Type.Object({
+        kerberos: Type.String({ minLength: 1 }),
+      }),
+    },
+  }, async (request: FastifyRequest<{ Params: { kerberos: string } }>, reply) => {
+    // accessible only by prof
+    if (!request.extendedUser || request.extendedUser.type !== 'prof') {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    // fetch user
+    if (!request.params.kerberos) {
+      await reply.code(400).send({ data: null, error: 'kerberos not found' })
+      return
+    }
+    const student = await getStudent(request.params.kerberos)
+    if (!student) {
+      await reply.code(400).send({ data: null, error: 'student not found' })
+      return
+    }
+    if (!student.resumePath) {
+      await reply.code(400).send({ data: null, error: 'resume not found' })
+      return
+    }
+    await reply.redirect(`/static/resume/${student.resumePath}`, 302)
   })
 }
 
