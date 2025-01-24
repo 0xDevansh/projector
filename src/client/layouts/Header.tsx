@@ -10,7 +10,7 @@ export function Header() {
 
   return (
     <header className="flex flex-row justify-around px-8 py-4 border-2 bg-gray-50 drop-shadow-md items-center">
-      <h1 className="lexend font-bold h2"><NavLink to="/app">Projects Portal</NavLink></h1>
+      <h1 className="lexend font-bold h2 text-indigo-700"><NavLink to="/app">Projects Portal</NavLink></h1>
       <div className="space-x-8 text-lg">
         <NavLink to="/app/about" className="hover-link font-semibold">About</NavLink>
         <NavLink to="/app/projects" className="hover-link font-semibold">Projects</NavLink>

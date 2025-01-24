@@ -8,6 +8,8 @@ import {
   addProject,
   getApplicationById,
   getApplications,
+  getApplicationsForStudent,
+  getAppliedProjects,
   getProjectById,
   getProjects,
   updateProject,
@@ -102,6 +104,28 @@ async function projectPlugin(server: FastifyInstance) {
     }
     const projects = await getProjects({ profKerberos: kerberos }, true)
     await reply.code(200).send({ error: null, data: projects })
+  })
+
+  server.get('/api/applications/mine', async (request, reply) => {
+    // runs only when user is a student
+    const kerberos = request.extendedUser?.type === 'student' ? request.extendedUser.user.kerberos : undefined
+    if (!kerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    const applications = await getApplicationsForStudent(kerberos)
+    await reply.code(200).send({ error: null, data: applications })
+  })
+
+  server.get('/api/projects/applied', async (request, reply) => {
+    // runs only when user is a student
+    const kerberos = request.extendedUser?.type === 'student' ? request.extendedUser.user.kerberos : undefined
+    if (!kerberos) {
+      await reply.code(403).send({ error: 'Forbidden', data: null })
+      return
+    }
+    const appliedProjects = await getAppliedProjects(kerberos)
+    await reply.code(200).send({ error: null, data: appliedProjects })
   })
 
   server.post('/api/project/:id/applications', {

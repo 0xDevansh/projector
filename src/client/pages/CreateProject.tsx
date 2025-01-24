@@ -12,9 +12,9 @@ export function CreateProject() {
     )
   }
   return (
-    <div className="home p-10">
+    <div className="home">
       <title>Create - Projects Portal</title>
-      <h1 className="mt-10 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">Create a new Project</h1>
+      <h1 className="mt-10 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 mb-5">Create a new Project</h1>
       <ProjectForm formAction="create" />
     </div>
   )

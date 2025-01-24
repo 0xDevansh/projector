@@ -1,7 +1,7 @@
 import type { Project } from '../../models/ProfessorProject.js'
 import type { ProjectDuration, ProjectType } from '../../types.js'
 import dayjs from 'dayjs'
-import { CalendarIcon, UserIcon } from 'lucide-react'
+import { CalendarIcon, CircleCheckIcon, UserIcon } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router'
 import { projectDuration, projectType } from '../../types.js'
@@ -9,20 +9,29 @@ import { Badge, BadgeWithTooltip } from './ui/badge.js'
 import { Button } from './ui/button.js'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card.js'
 
-export default function ProjectCard({ project }: { project: Project }) {
+export default function ProjectCard({ project, applied, profView }: { project: Project, applied?: boolean, profView?: boolean }) {
+  // check lastApplyDate
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const lastApplyDate = new Date(project.lastApplyDate)
+  lastApplyDate.setHours(0, 0, 0, 0)
+  const lastApplyDatePassed = lastApplyDate < today
   return (
-    <Card className="inline-flex flex-col max-w-md m-2 self-stretch" key={project.id}>
+    <Card className="inline-flex flex-col m-2 self-stretch" key={project.id}>
       <CardHeader>
-        {project.projectStatus === 'draft' && <h3 className="text-red-600">Draft</h3>}
-        {project.projectStatus === 'closed' && <h3 className="text-yellow-500">Closed</h3>}
-        {project.projectStatus === 'ended' && <h3 className="text-red-600">Ended</h3>}
-        <CardTitle className="text-ellipsis overflow-hidden text-nowrap">{project.title}</CardTitle>
-        <CardDescription>
-          {`${project.prof?.user?.name}` || project.profKerberos}
-        </CardDescription>
+        <CardTitle className="text-ellipsis overflow-hidden text-nowrap text-lg">{project.title}</CardTitle>
+        {profView && project.projectStatus === 'open' && <h3 className="text-green-800 font-semibold">Open</h3>}
+        {profView && project.projectStatus === 'draft' && <h3 className="text-yellow-600 font-semibold">Draft</h3>}
+        {profView && project.projectStatus === 'closed' && <h3 className="text-red-800 font-semibold">Closed</h3>}
+        {profView && project.projectStatus === 'ended' && <h3 className="text-red-800 font-semibold">Ended</h3>}
+        {!profView && (
+          <CardDescription className="text-foreground text-md">
+            {`Prof. ${project.prof?.user?.name}` || project.profKerberos}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex-grow">
-        <p className="text-sm text-muted-foreground mb-4 text-ellipsis overflow-hidden text-nowrap">{project.description}</p>
+        <p className="text-sm mb-4 text-ellipsis overflow-hidden text-nowrap">{project.description}</p>
         <div className="flex flex-wrap gap-2 mb-2">
           {project.projectType.map((type) => {
             const pType = ['disa', 'sura'].includes(type)
@@ -57,19 +66,33 @@ export default function ProjectCard({ project }: { project: Project }) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-2">
-        <div className="text-sm">
+        <div className="text-md font-semibold">
           Last Application Date:
           {' '}
-          <span className="font-semibold">{dayjs(project.lastApplyDate).format('DD MMM YYYY')}</span>
+          <span className={`font-normal${lastApplyDatePassed ? ' text-red-800 font-semibold' : ''}`}>{dayjs(project.lastApplyDate).format('DD MMM YYYY')}</span>
         </div>
-        <div className="text-sm">
+        <div className="text-md font-semibold">
           Stipend:
           {' '}
-          <span className="font-semibold">{project.stipendProvided ? `₹${project.stipendAmount}` : 'Not Provided'}</span>
+          <span className="font-normal">{project.stipendProvided ? `₹${project.stipendAmount}` : 'Not Provided'}</span>
         </div>
-        <Link to={`/app/project/${project.id}`} className="w-full mt-2">
-          <Button className="w-full">View Details</Button>
-        </Link>
+        {applied && (
+          <div className="text-md font-semibold text-green-900 inline-flex gap-1">
+            <CircleCheckIcon />
+            <span>You have applied</span>
+          </div>
+        )}
+        {applied === false
+          ? (
+              <Link to={`/app/project/${project.id}`} className="w-full mt-2">
+                <Button className="w-full">Apply</Button>
+              </Link>
+            )
+          : (
+              <Link to={`/app/project/${project.id}`} className="w-full mt-2">
+                <Button className="w-full">View Details</Button>
+              </Link>
+            )}
       </CardFooter>
     </Card>
   )

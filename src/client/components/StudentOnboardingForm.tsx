@@ -56,7 +56,6 @@ export default function StudentOnboardingForm() {
       navigate('/app')
       return
     }
-    console.log(values)
     // Send to server
     const mainRes = await axios.post('/api/user/student', { ...values, name: authContext.user.user.name, kerberos: authContext.user.user.email.split('@')[0], resume: undefined }, { headers: { 'content-type': 'application/json' } })
     if (mainRes.status !== 200) {
@@ -82,7 +81,7 @@ export default function StudentOnboardingForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto py-5">
         <FormField
           control={form.control}
           name="degree"
@@ -155,30 +154,23 @@ export default function StudentOnboardingForm() {
           )}
         />
 
-        <div className="grid grid-cols-12 gap-4">
-
-          <div className="col-span-4">
-
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder=""
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>Your publicly visible description (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-        </div>
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>Your publicly visible description (optional)</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
