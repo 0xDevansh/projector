@@ -6,10 +6,10 @@ import React from 'react'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
 import { degreeName, deptName } from '../../types.js'
-import { buttonVariants } from '../components/ui/button'
+import { buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
-import { cn } from '../utils'
+import { cn } from '../utils.js'
 import NotFound from './NotFound.js'
 
 export default function ApplicationDetails() {
