@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
+import PageHeader from '../components/PageHeader.js'
 import ProfOnboardingForm from '../components/ProfOnboardingForm.js'
 import StudentOnboardingForm from '../components/StudentOnboardingForm.js'
 
@@ -19,9 +20,10 @@ export default function Onboarding() {
   })
   // else render a form to fill student or prof details based on user.type
   return (
-    <div className="onboarding p-10">
+    <div>
+      <PageHeader title="Onboarding" />
       <title>Onboarding - Projects Portal</title>
-      <h1 className="text-2xl">Please enter your details</h1>
+      <h1 className="h3 font-normal lexend">Please enter your details</h1>
       {authCtx?.user?.type === 'student'
         ? <StudentOnboardingForm />
         : <ProfOnboardingForm />}

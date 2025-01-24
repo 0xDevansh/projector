@@ -1,25 +1,23 @@
-import type { Project } from '../../models/ProfessorProject.js'
-import React from 'react'
-import useSWR from 'swr'
-import ProjectCard from '../components/ProjectCard.js'
+import React, { useContext } from 'react'
+import { AuthContext } from '../AuthContext.js'
+import ProfProjects from '../components/ProfProjects.js'
+import StudentProjects from '../components/StudentProjects.js'
 
-export default function Projects({ profProjects }: { profProjects?: boolean }) {
-  const { data, error, isLoading } = useSWR(profProjects ? `/api/my-projects` : `/api/projects`)
-  if (isLoading) {
-    return <h1 className="text-lg">Loading...</h1>
-  }
-  else if (error || !data?.data) {
-    return <h1 className="text-lg">There was an error loading this project</h1>
-  }
-  else {
-    const projects = data.data
-    console.log(projects)
+export default function Projects() {
+  const authCtx = useContext(AuthContext)
+
+  if (authCtx?.user?.type === 'student') {
     return (
-      <div className="projects items-stretch">
+      <div className="projects">
         <title>Projects - Projects Portal</title>
-        {projects.map((proj: Project) => <ProjectCard project={proj} key={proj.id} />)}
-        {projects.length === 0 && <h1 className="text-lg">No open projects found</h1>}
+        <StudentProjects />
       </div>
     )
   }
+  return (
+    <div className="projects">
+      <title>Projects - Projects Portal</title>
+      <ProfProjects />
+    </div>
+  )
 }

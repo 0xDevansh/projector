@@ -335,12 +335,13 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
             </h1>
             {project.projectStatus === 'open' && <p>This project is accepting new applications</p>}
             {project.projectStatus === 'closed' && <p>This project is not accepting new applications</p>}
+            <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to={`/app/project/${project.id}/edit`}>Edit Project details</Link>
             <Button
               onClick={onChangeStatus}
+              variant="destructive"
             >
               {project.projectStatus === 'open' ? 'Close Project' : 'Open for applications'}
             </Button>
-            <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to={`/app/project/${project.id}/edit`}>Edit Project details</Link>
 
           </CardContent>
         </Card>
@@ -359,7 +360,6 @@ function ApplicationsCard({ project }: { project: Project }) {
     return <h1 className="text-lg">There was an unexpected error</h1>
   }
   const applications = data.data as Application[]
-  console.log(applications)
   return (
     <Card className="mt-4">
       <CardHeader>
@@ -373,28 +373,38 @@ function ApplicationsCard({ project }: { project: Project }) {
           {' '}
           applications
         </p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>CGPA</TableHead>
-              <TableHead>Applied on</TableHead>
-              <TableHead>More details</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {applications.map(app => (
-              <TableRow key={app.id}>
-                <TableCell className="font-medium">{app.student.user.name}</TableCell>
-                <TableCell>{deptName[app.student.user.deptCode as DeptCode]}</TableCell>
-                <TableCell>{app.student.cgpa}</TableCell>
-                <TableCell>{dayjs(app.createdAt).format('DD MMM YYYY')}</TableCell>
-                <TableCell><Link className={cn(buttonVariants({ variant: 'outline' }), 'py-4')} to={`/app/project/${project.id}/applications/${app.id}`}>Show Application</Link></TableCell>
+        {applications.length > 0 && (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>CGPA</TableHead>
+                <TableHead>Applied on</TableHead>
+                <TableHead>More details</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {applications.map(app => (
+                <TableRow key={app.id}>
+                  <TableCell className="font-medium">{app.student.user.name}</TableCell>
+                  <TableCell>{deptName[app.student.user.deptCode as DeptCode]}</TableCell>
+                  <TableCell>{app.student.cgpa}</TableCell>
+                  <TableCell>{dayjs(app.createdAt).format('DD MMM YYYY')}</TableCell>
+                  <TableCell>
+                    <Link
+                      className={cn(buttonVariants({ variant: 'outline' }), 'py-4')}
+                      to={`/app/project/${project.id}/applications/${app.id}`}
+                    >
+                      Show
+                      Application
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   )

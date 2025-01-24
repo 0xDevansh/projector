@@ -4,17 +4,17 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
+        --background: 0 0% 95%;
         --foreground: 222.2 47.4% 11.2%;
         --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
+        --muted-foreground: 215.4 16.3% 40%;
         --popover: 0 0% 100%;
         --popover-foreground: 222.2 47.4% 11.2%;
         --border: 214.3 31.8% 91.4%;
         --input: 214.3 31.8% 91.4%;
         --card: 0 0% 100%;
         --card-foreground: 222.2 47.4% 11.2%;
-        --primary: 222.2 47.4% 11.2%;
+        --primary: 222.2 55% 31%;
         --primary-foreground: 210 40% 98%;
         --secondary: 210 40% 96.1%;
         --secondary-foreground: 222.2 47.4% 11.2%;
@@ -56,8 +56,6 @@
     body {
         @apply font-sans antialiased bg-background text-foreground;
         font-family: "Montserrat", sans-serif;
-        background: rgb(138,132,182);
-        background: linear-gradient(90deg, rgba(138,132,182,1) 0%, rgba(183,213,212,1) 100%);
     }
     html {
         -webkit-tap-highlight-color: transparent;

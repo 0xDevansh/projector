@@ -142,7 +142,7 @@ export async function getProjects(filter: Partial<Static<typeof ProjectFilterTyp
   if (filter.applyDateNotPassed)
     qBuilder = qBuilder.andWhere(`lastApplyDate >= :now`, { now: new Date().toISOString() })
 
-  const res = (await qBuilder.getMany())
+  return (await qBuilder.getMany())
     .filter((p) => {
       const criteria: boolean[] = []
       if (filter.projectType) {
@@ -163,7 +163,6 @@ export async function getProjects(filter: Partial<Static<typeof ProjectFilterTyp
       }
       return criteria.every(c => c)
     })
-  return res
 }
 
 export async function addProject(project: Partial<ProjectTSType>) {
@@ -211,6 +210,23 @@ export async function getApplications(projectId: string, studentKerberos?: strin
     .where('projectId = :projectId', { projectId })
   if (studentKerberos)
     qBuilder = qBuilder.andWhere('studentKerberos = :studentKerberos', { studentKerberos })
+  return await qBuilder.getMany()
+}
+
+export async function getApplicationsForStudent(studentKerberos: string) {
+  const qBuilder = applicationRepo.createQueryBuilder('application')
+    // .select('*')
+    .leftJoinAndSelect('application.student', 'student')
+    .leftJoinAndSelect('student.user', 'studentUser')
+    .where('studentKerberos = :studentKerberos', { studentKerberos })
+  return await qBuilder.getMany()
+}
+
+export async function getAppliedProjects(studentKerberos: string) {
+  const qBuilder = applicationRepo.createQueryBuilder('application')
+    .select('projectId')
+    .from(Application, 'application')
+    .where('studentKerberos = :studentKerberos', { studentKerberos })
   return await qBuilder.getMany()
 }
 
