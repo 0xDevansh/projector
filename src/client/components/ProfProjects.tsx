@@ -1,11 +1,12 @@
 import type { Project } from '../../models/ProfessorProject.js'
+import { PlusIcon } from 'lucide-react'
 import React, { useContext } from 'react'
 import { Link } from 'react-router'
 import useSWR from 'swr'
 import { AuthContext } from '../AuthContext.js'
-import { cn } from '../utils'
+import { cn } from '../utils.js'
 import ProjectCard from './ProjectCard.js'
-import { buttonVariants } from './ui/button'
+import { buttonVariants } from './ui/button.js'
 
 export default function ProfProjects() {
   const { data, isLoading, error } = useSWR(`/api/projects`)
@@ -25,30 +26,48 @@ export default function ProfProjects() {
   console.log(projects)
   return (
     <div>
-      <h2 className="h2 my-5">Your Projects</h2>
-      <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to="/app/projects/create">Add new project</Link>
-      <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex gap-10">
+        <h2 className="h2 my-5">
+          Your Projects
+        </h2>
+        <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to="/app/projects/create">
+          <PlusIcon />
+          Add new project
+        </Link>
+
+      </div>
+      <div className="mx-7">
         <title>Projects - Projects Portal</title>
-        {myProjects.map((proj: Project) => (
-          <ProjectCard
-            project={proj}
-            key={proj.id}
-            profView
-          />
-        ))}
-        {myProjects.length === 0 && <h1 className="text-lg  mx-5">No projects found</h1>}
+        {myProjects.length === 0 && <NoProjectsFound />}
+        <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {myProjects.map((proj: Project) => (
+            <ProjectCard
+              project={proj}
+              key={proj.id}
+              profView
+            />
+          ))}
+        </div>
       </div>
       <h2 className="h2 mb-2 mt-6">Other open projects</h2>
-      <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {otherProjects.length === 0 && <NoProjectsFound />}
+      <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-7">
         {otherProjects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos).map((proj: Project) => (
           <ProjectCard
             project={proj}
             key={proj.id}
           />
         ))}
-        {otherProjects.length === 0 && <h1 className="text-lg mx-5">No projects found</h1>}
       </div>
     </div>
 
+  )
+}
+
+export function NoProjectsFound() {
+  return (
+    <p className="flex justify-center items-center py-10 text-lg border-2 border-gray-300 rounded-xl text-muted-foreground mx-7">
+      No Projects found
+    </p>
   )
 }

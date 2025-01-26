@@ -54,7 +54,7 @@ await server.register(cookie, {
 })
 await server.register(fastifyStatic, {
   root: resolve(dirname(fileURLToPath(import.meta.url)), '../static'),
-  prefix: '/static',
+  prefix: '/static/',
 })
 server.decorateRequest('extendedUser', null)
 server.addHook('preHandler', (request, _reply, done) => {

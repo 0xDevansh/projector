@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
 import { Button } from '../components/ui/button.js'
 import { useToast } from '../hooks/use-toast.js'
-import { loginLink } from '../layouts/Header'
+import { loginLink } from '../layouts/Header.js'
 
 export function Home() {
   const ctx = React.useContext(AuthContext)
@@ -26,8 +26,8 @@ export function Home() {
       <title>Home - Projects Portal</title>
 
       <div className="space-y-12 mt-5">
-        <section className="text-center">
-          <h1 className="text-4xl font-bold text-indigo-700 mb-4 lexend">Welcome to Projects Portal</h1>
+        <section className="text-center py-10">
+          <h1 className="text-4xl font-bold mb-4 lexend bg-gradient-to-r from-blue-700 to-purple-700 text-transparent bg-clip-text">Welcome to Projects Portal</h1>
           <p className="text-xl font-semibold text-slate-600 max-w-2xl mx-auto">
             We help professors and students collaborate for innovative research projects.
           </p>

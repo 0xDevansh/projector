@@ -6,18 +6,19 @@ import StudentProjects from '../components/StudentProjects.js'
 export default function Projects() {
   const authCtx = useContext(AuthContext)
 
-  if (authCtx?.user?.type === 'student') {
+  if (authCtx?.user?.type === 'prof') {
     return (
       <div className="projects">
         <title>Projects - Projects Portal</title>
-        <StudentProjects />
+        <ProfProjects />
       </div>
     )
   }
+
   return (
     <div className="projects">
       <title>Projects - Projects Portal</title>
-      <ProfProjects />
+      <StudentProjects isLoggedIn={!!authCtx?.user} />
     </div>
   )
 }

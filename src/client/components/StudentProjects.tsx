@@ -2,16 +2,18 @@ import type { Application } from '../../models/Application.js'
 import type { Project } from '../../models/ProfessorProject.js'
 import React from 'react'
 import useSWR from 'swr'
+import { NoProjectsFound } from './ProfProjects.js'
 import ProjectCard from './ProjectCard.js'
 
-export default function StudentProjects() {
+export default function StudentProjects({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const projectsCall = useSWR(`/api/projects`)
-  const applicationsCall = useSWR(`/api/applications/mine`)
+  // a hack to keep this hook on the top of the page
+  const applicationsCall = useSWR(isLoggedIn ? `/api/applications/mine` : `/api/projects`)
 
-  if (projectsCall.isLoading || applicationsCall.isLoading) {
+  if (projectsCall.isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
-  else if (projectsCall.error || applicationsCall.error || !projectsCall.data?.data || !applicationsCall.data?.data) {
+  else if (projectsCall.error || !projectsCall.data?.data) {
     return <h1 className="text-lg">There was an error loading the projects...</h1>
   }
 
@@ -24,11 +26,39 @@ export default function StudentProjects() {
   }) as Project[]
   projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
 
+  if (!isLoggedIn) {
+    return (
+      <div>
+        <h2 className="h2 my-5">Open Projects</h2>
+        {projects.length === 0 && <NoProjectsFound />}
+        <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <title>Projects - Projects Portal</title>
+          {projects.map((proj: Project) => (
+            <ProjectCard
+              project={proj}
+              key={proj.id}
+              applied={false}
+            />
+          ))}
+        </div>
+      </div>
+
+    )
+  }
+
+  if (applicationsCall.isLoading) {
+    return <h1 className="text-lg">Loading...</h1>
+  }
+  else if (applicationsCall.error || !applicationsCall.data?.data) {
+    return <h1 className="text-lg">There was an error loading the projects...</h1>
+  }
+
   const applications = applicationsCall.data.data as Application[]
   const appliedProjectIds = applications.map(app => app.projectId)
   return (
     <div>
-      <h2 className="h2">Open Projects</h2>
+      <h2 className="h2 my-5">Open Projects</h2>
+      {projects.length === 0 && <NoProjectsFound />}
       <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <title>Projects - Projects Portal</title>
         {projects.map((proj: Project) => (
@@ -38,11 +68,8 @@ export default function StudentProjects() {
             applied={appliedProjectIds.includes(proj.id)}
           />
         ))}
-        {projects.length === 0 && <h1 className="text-lg">No open projects found</h1>}
       </div>
     </div>
 
   )
-
-  return (<h1>Hello</h1>)
 }
