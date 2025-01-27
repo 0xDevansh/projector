@@ -20,7 +20,8 @@ export default function ProjectCard({ project, applied, profView }: { project: P
     <Card className="inline-flex flex-col m-2 self-stretch" key={project.id}>
       <CardHeader>
         <CardTitle className="text-ellipsis overflow-hidden text-nowrap text-lg">{project.title}</CardTitle>
-        {profView && project.projectStatus === 'open' && <h3 className="text-green-800 font-semibold">Open</h3>}
+        {profView && project.projectStatus === 'open' && !lastApplyDatePassed && <h3 className="text-green-800 font-semibold">Open</h3>}
+        {profView && project.projectStatus === 'open' && lastApplyDatePassed && <h3 className="text-red-800 font-semibold">Application date passed</h3>}
         {profView && project.projectStatus === 'draft' && <h3 className="text-yellow-600 font-semibold">Draft</h3>}
         {profView && project.projectStatus === 'closed' && <h3 className="text-red-800 font-semibold">Closed</h3>}
         {profView && project.projectStatus === 'ended' && <h3 className="text-red-800 font-semibold">Ended</h3>}

@@ -28,7 +28,7 @@ export default function ApplicationDetails() {
   return (
     <div className="container mx-auto py-8 px-4 flex-col gap-4">
       <title>Application - Projects Portal</title>
-      <h1 className="text-3xl font-bold mb-6">{application.project.title}</h1>
+      <h1 className="text-3xl font-bold mb-6">Student Application</h1>
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Student details</CardTitle>
