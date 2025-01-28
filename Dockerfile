@@ -1,19 +1,24 @@
 # Use Node.js LTS as the base image
-FROM node:22-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-COPY . /app
+FROM node:22-slim AS base
+
+# Set the working directory in the container
 WORKDIR /app
 
-FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
+# Install dependencies
+RUN npm install
 
-FROM base
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
+# Copy the rest of the application files
+COPY . .
+
+# Run the build script
+RUN npm run build
+
+# Expose the application port
+ENV PORT=8000
 EXPOSE 8000
-CMD [ "pnpm", "start" ]
+
+# Define the command to run the application
+CMD ["node", "dist/server.js", "--dev"]

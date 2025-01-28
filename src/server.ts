@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path'
 import { argv, env, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import cookie from '@fastify/cookie'
+import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import multipart from '@fastify/multipart'
 import fastifyStatic from '@fastify/static'
@@ -46,6 +47,7 @@ const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
 await server.register(multipart)
 // await server.register(multer.contentParser)
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
+await server.register(cors, { origin: '*' })
 await server.register(cookie, {
   secret: env.COOKIE_SECRET,
   parseOptions: {
