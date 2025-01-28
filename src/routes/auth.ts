@@ -71,7 +71,7 @@ export default async (server: FastifyInstance) => {
           email: response.data.user.email,
           name: response.data.user.name,
         }, {
-          expiresIn: env.JWT_EXPIRES ?? '',
+          expiresIn: 60 * 60 * 24,
         })
 
         reply.cookie('token', token)
