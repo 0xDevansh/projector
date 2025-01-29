@@ -53,7 +53,7 @@ export default async (server: FastifyInstance) => {
     // Ensure environment variables are set
     if (!client_id || !client_secret || !env.JWT_SECRET) {
       console.error('Client ID or Client secret or JWT secret not configured.')
-      return reply.code(500).send({ error: 'internal server error' })
+      return reply.code(500).send({ error: 'internal server error', data: null })
     }
 
     try {
@@ -80,7 +80,7 @@ export default async (server: FastifyInstance) => {
     }
     catch (err: any) {
       server.log.error('Error during OAuth callback:', err.message || err)
-      return reply.code(500).send({ error: 'Internal Server Error.' })
+      return reply.code(500).send({ error: 'Internal Server Error.', data: null })
     }
   })
 
