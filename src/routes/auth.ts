@@ -58,7 +58,7 @@ export default async (server: FastifyInstance) => {
 
     try {
       // Make a request to auth server to verify the auth_code and request for resources with the available grant type
-      const response = await axios.post('https://iitdoauth.vercel.app/api/auth/resource', {
+      const response = await axios.post('http://localhost:5050/oauth/signin', {
         client_id,
         client_secret,
         auth_code: code,
