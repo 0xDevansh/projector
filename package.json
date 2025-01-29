@@ -13,7 +13,8 @@
     "build:server": "tsc",
     "dev": "npm run build:server && node dist/server.js --dev",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "deploy": "echo 'Pulling from Github...' && git pull origin main --quiet && echo 'Installing packages...' && pnpm --silent install && echo 'Building...' && pnpm build && echo 'Restarting process...' && pm2 restart projects --silent && echo 'Done!'"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",
