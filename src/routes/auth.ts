@@ -51,7 +51,7 @@ export default async (server: FastifyInstance) => {
     const grant_type = 'authorization_code'
 
     // Ensure environment variables are set
-    if (!client_id || !client_secret || !env.JWT_SECRET || !env.JWT_EXPIRES) {
+    if (!client_id || !client_secret || !env.JWT_SECRET) {
       console.error('Client ID or Client secret or JWT secret not configured.')
       return reply.code(500).send({ error: 'internal server error' })
     }
