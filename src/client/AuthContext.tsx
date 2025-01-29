@@ -17,7 +17,7 @@ function AuthProvider({ children, initialIsLoggedIn, initialUser }: { children: 
 
   const reloadAuth = async () => {
     // query auth to check cookie
-    const res = await axios.get('http://localhost:8080/api/check-auth')
+    const res = await axios.get('/api/check-auth')
     if (!res.data) {
       setIsLoggedIn(false)
       setUser(undefined)

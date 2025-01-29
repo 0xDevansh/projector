@@ -8,7 +8,7 @@ async function mount() {
   const root = createRoot(rootElement)
 
   // fetch auth data
-  const res = await axios.get('http://localhost:8080/api/check-auth')
+  const res = await axios.get('/api/check-auth')
   if (res.data.data) {
     root.render(createApp(true, res.data.data))
   }

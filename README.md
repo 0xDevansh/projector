@@ -7,4 +7,4 @@
 - Build the project: `pnpm build`
 - Run: `node dist/index.js --dev` 
 
-For some reason it doesn't run on production mode. I've opened an issue in fastify-vite and will fix soon.
+For some reason it doesn't run on production mode. I've opened an issue in fastify-vite and will fix soon.  
