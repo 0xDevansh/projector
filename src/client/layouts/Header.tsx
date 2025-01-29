@@ -3,7 +3,7 @@ import { NavLink } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
 import { buttonVariants } from '../components/ui/button.js'
 
-export const loginLink = 'https://oauthdevclub.vercel.app/signin?client_id=mHuhtM4zb6YlaY9qxEvNpvmEM4w&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Foauth-callback'
+export const loginLink = 'https://oauthdevclub.vercel.app/signin?client_id=mHuhtM4zb6YlaY9qxEvNpvmEM4w&redirect_uri=https%3A%2F%2Fprojects.apps.iitd.ac.in%2Fapi%2Foauth-callback'
 
 export function Header() {
   const authCtx = useContext(AuthContext)

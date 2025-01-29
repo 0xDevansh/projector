@@ -11,7 +11,6 @@ import ApplicationDetails from './pages/ApplicationDetails.js'
 import { CreateProject } from './pages/CreateProject.js'
 import { EditProject } from './pages/EditProject.js'
 import { Home } from './pages/Home.js'
-import { Login } from './pages/Login.js'
 import NotFound from './pages/NotFound.js'
 import Onboarding from './pages/Onboarding.js'
 import ProjectDetails from './pages/ProjectDetails.js'
@@ -32,7 +31,6 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
                 <Route path="app" element={<AppLayout />}>
                   <Route index element={<Home />} />
                   <Route path="about" element={<About />} />
-                  <Route path="login" element={<Login />} />
                   <Route path="onboarding" element={<Onboarding />} />
                   <Route path="projects" element={<Projects />} />
                   <Route path="projects/create" element={<CreateProject />} />
