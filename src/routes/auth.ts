@@ -79,7 +79,8 @@ export default async (server: FastifyInstance) => {
       }
     }
     catch (err: any) {
-      server.log.error('Error during OAuth callback:', err.message || err)
+      console.error('Error during OAuth callback!')
+      console.error(err)
       return reply.code(500).send({ error: 'Internal Server Error.', data: null })
     }
   })
