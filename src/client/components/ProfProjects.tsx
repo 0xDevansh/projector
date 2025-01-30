@@ -9,18 +9,20 @@ import ProjectCard from './ProjectCard.js'
 import { buttonVariants } from './ui/button.js'
 
 export default function ProfProjects() {
-  const { data, isLoading, error } = useSWR(`/api/projects`)
+  const projectsCall = useSWR(`/api/projects`)
+  const myProjectsCall = useSWR(`/api/my-projects`)
   const authCtx = useContext(AuthContext)
 
-  if (isLoading) {
+  if (projectsCall.isLoading || myProjectsCall.isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
-  else if (error || !data?.data) {
+  else if (projectsCall.error || myProjectsCall.error || !projectsCall.data?.data || !myProjectsCall.data?.data) {
     return <h1 className="text-lg">There was an error loading the projects...</h1>
   }
-  const projects = data.data as Project[]
+  const projects = projectsCall.data as Project[]
+  const myProjects = myProjectsCall.data as Project[]
   projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
-  const myProjects = projects.filter(p => p.profKerberos === authCtx?.user?.user.kerberos)
+  myProjects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
   const otherProjects = projects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos)
 
   console.log(projects)
