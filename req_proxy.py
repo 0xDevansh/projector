@@ -76,11 +76,11 @@ def main(port=5000):
 
 if __name__ == "__main__":
     # Default to port 5005 if no port specified
-    port = 5005
+    port = 5000
     if len(sys.argv) > 1:
         try:
             port = int(sys.argv[1])
         except ValueError:
-            print("Invalid port number. Using default 5005.")
+            print(f"Invalid port number. Using default {port}.")
 
     main(port)
