@@ -19,8 +19,8 @@ export default function ProfProjects() {
   else if (projectsCall.error || myProjectsCall.error || !projectsCall.data?.data || !myProjectsCall.data?.data) {
     return <h1 className="text-lg">There was an error loading the projects...</h1>
   }
-  const projects = projectsCall.data as Project[]
-  const myProjects = myProjectsCall.data as Project[]
+  const projects = projectsCall.data.data as Project[]
+  const myProjects = myProjectsCall.data.data as Project[]
   console.log(projects)
   console.log(myProjects)
   projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
