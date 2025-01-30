@@ -69,8 +69,8 @@ export default async (server: FastifyInstance) => {
       if (response.status === 200) {
         console.log(response.data)
         const token = await jwtUser.sign({
-          email: response.data.user.email,
-          name: response.data.user.name,
+          email: response.data.email,
+          name: response.data.name,
         }, {
           expiresIn: 60 * 60 * 24,
         })
