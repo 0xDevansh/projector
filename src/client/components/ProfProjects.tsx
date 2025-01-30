@@ -21,8 +21,6 @@ export default function ProfProjects() {
   }
   const projects = projectsCall.data.data as Project[]
   const myProjects = myProjectsCall.data.data as Project[]
-  console.log(projects)
-  console.log(myProjects)
   projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
   myProjects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
   const otherProjects = projects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos)

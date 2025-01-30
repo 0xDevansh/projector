@@ -200,7 +200,7 @@ export default function ProjectDetails() {
                   <div className="flex items-center gap-2">
                     <SchoolIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Eligible departments:</span>
-                    {project.eligibleDegrees?.length > 0
+                    {project.eligibleDepartments?.length > 0
                       ? project.eligibleDepartments.map((ed: DeptCode) => (
                           <Badge
                             key={ed}
