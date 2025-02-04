@@ -245,14 +245,14 @@ export default function ProjectDetails() {
 }
 
 function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: AuthCtx | undefined, project: Project, onMakePublic: () => void, onChangeStatus: () => void }) {
+  let applications: Application[] = []
   const { data, error, isLoading } = useSWR(`/api/project/${project.id}/applications`)
   if (isLoading) {
     return <h1 className="text-lg">Loading...</h1>
   }
-  else if (error || !data?.data) {
-    return <h1 className="text-lg">There was an unexpected error</h1>
+  else if (!error && data?.data) {
+    applications = data.data as Application[]
   }
-  const applications = data.data as Application[]
   if (!authCtx?.isLoggedIn) {
     // not logged in
     return (
