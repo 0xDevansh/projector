@@ -11,6 +11,7 @@ import type {
 } from './types.js'
 import { nanoid } from 'nanoid'
 import { DataSource } from 'typeorm'
+import { Analytics } from './models/Analytics.js'
 import { Application } from './models/Application.js'
 import { Professor, Project } from './models/ProfessorProject.js'
 import { Student } from './models/Student.js'
@@ -20,7 +21,7 @@ import 'reflect-metadata'
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'projector.db',
-  entities: [User, Student, Professor, Project, Application],
+  entities: [User, Student, Professor, Project, Application, Analytics],
   synchronize: true,
 })
 
@@ -39,6 +40,10 @@ export async function getStudent(kerberos: string) {
   return await studentRepo.findOneBy({ kerberos })
 }
 
+export function getUser(kerberos: string) {
+  return userRepo.findOneBy({ kerberos })
+}
+
 export async function getExtendedUserByKerberos(kerberos: string): Promise<ExtendedUser | null> {
   const user = await userRepo.findOneBy({ kerberos })
   if (!user)
@@ -54,10 +59,6 @@ export async function getExtendedUserByKerberos(kerberos: string): Promise<Exten
     const prof = await profRepo.findOneBy({ kerberos }) ?? undefined
     return { user, type: 'prof', prof }
   }
-}
-
-export async function getUser(kerberos: string) {
-  return await userRepo.findOneBy({ kerberos })
 }
 
 export async function createOrUpdateUser(data: { email?: string, name?: string, type?: UserType, deptCode?: string }) {
@@ -239,5 +240,21 @@ export async function updateResumePath(kerberos: string, resumePath: string) {
     .update(Student)
     .set({ resumePath })
     .where('kerberos = :kerberos', { kerberos })
+    .execute()
+}
+
+export async function addLoginLog(kerberos: string, userType: string) {
+  await AppDataSource.createQueryBuilder()
+    .insert()
+    .into(Analytics)
+    .values([{ kerberos, userType, action: 'login' }])
+    .execute()
+}
+
+export async function addLogoutLog(kerberos: string, userType: UserType) {
+  await AppDataSource.createQueryBuilder()
+    .insert()
+    .into(Analytics)
+    .values([{ kerberos, userType, action: 'logout' }])
     .execute()
 }

@@ -5,6 +5,7 @@ import { env } from 'node:process'
 import { Type } from '@sinclair/typebox'
 import axios from 'axios'
 import { JWT } from 'node-jsonwebtoken'
+import { addLoginLog, addLogoutLog, getUser } from '../database.js'
 import { ExtendedUserType } from './user.js'
 
 // This file holds the routes: /api/oauth-callback, /api/check-auth, /api/logout
@@ -58,24 +59,30 @@ export default async (server: FastifyInstance) => {
 
     try {
       // Make a request to auth server to verify the auth_code and request for resources with the available grant type
-      const response = await axios.post('http://localhost:5005/oauth/signin', {
+      const url = env.ENV !== 'dev' ? 'http://localhost:5005/oauth/signin' : 'https://iitdoauth.vercel.app/api/auth/resource'
+      const response = await axios.post(url, {
         client_id,
         client_secret,
         auth_code: code,
         state,
         grant_type,
       })
-
+      console.log(response.data)
       if (response.status === 200) {
-        console.log(response.data)
+        // sign the user with JWT and set the cookie
         const token = await jwtUser.sign({
-          email: response.data.email,
-          name: response.data.name,
+          email: response.data.user.email,
+          name: response.data.user.name,
         }, {
           expiresIn: 60 * 60 * 24,
         })
-
         reply.cookie('token', token)
+
+        // add analytics log
+        const kerberos = response.data.user.email.split('@')[0]
+        const user = await getUser(kerberos)
+        // if user not already in db, it must be a student
+        await addLoginLog(kerberos, user ? user.type : 'student')
         reply.redirect('/app', 302)
       }
     }
@@ -99,6 +106,11 @@ export default async (server: FastifyInstance) => {
   server.get('/api/logout', async (request: FastifyRequest, reply: FastifyReply) => {
     // set cookie token with expiry date of now
     reply.cookie('token', '', { expires: new Date() })
+
+    // add analytics log
+    if (request.extendedUser?.user) {
+      await addLogoutLog(request.extendedUser.user.kerberos, request.extendedUser.type)
+    }
     reply.redirect('/app')
   })
 }

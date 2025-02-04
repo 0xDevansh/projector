@@ -65,7 +65,7 @@ def oauth_signin():
     user = sign_in(auth_code, state, client_id, client_secret)
 
     if user:
-        return jsonify(user), 200
+        return jsonify({'user': user}), 200
     else:
         return jsonify({"error": "Authentication failed"}), 401
 
