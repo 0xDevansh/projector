@@ -37,7 +37,6 @@ export default function StudentProjects({ isLoggedIn }: { isLoggedIn?: boolean }
             <ProjectCard
               project={proj}
               key={proj.id}
-              applied={false}
             />
           ))}
         </div>
@@ -66,6 +65,7 @@ export default function StudentProjects({ isLoggedIn }: { isLoggedIn?: boolean }
             project={proj}
             key={proj.id}
             applied={appliedProjectIds.includes(proj.id)}
+            isLoggedIn
           />
         ))}
       </div>

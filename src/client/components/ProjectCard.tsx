@@ -9,7 +9,7 @@ import { Badge, BadgeWithTooltip } from './ui/badge.js'
 import { Button } from './ui/button.js'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card.js'
 
-export default function ProjectCard({ project, applied, profView }: { project: Project, applied?: boolean, profView?: boolean }) {
+export default function ProjectCard({ project, applied, profView, isLoggedIn }: { project: Project, applied?: boolean, profView?: boolean, isLoggedIn?: boolean }) {
   // check lastApplyDate
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -83,7 +83,7 @@ export default function ProjectCard({ project, applied, profView }: { project: P
             <span>You have applied</span>
           </div>
         )}
-        {applied === false
+        { isLoggedIn && !applied
           ? (
               <Link to={`/app/project/${project.id}`} className="w-full mt-2">
                 <Button className="w-full">Apply</Button>
