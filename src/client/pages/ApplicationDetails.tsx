@@ -5,7 +5,7 @@ import { Calendar, FileUserIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 
 import React from 'react'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
-import { degreeName, deptName } from '../../types.js'
+import { degreeName, deptData } from '../../types.js'
 import { buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
@@ -43,7 +43,7 @@ export default function ApplicationDetails() {
             <div className="flex items-center gap-2">
               <SchoolIcon className="w-5 h-5 text-muted-foreground" />
               <span className="font-semibold">Department:</span>
-              <span>{deptName[application.student.user.deptCode as DeptCode]}</span>
+              <span>{deptData[application.student.user.deptCode as DeptCode].name}</span>
             </div>
             <div className="flex items-center gap-2">
               <GraduationCapIcon className="w-5 h-5 text-muted-foreground" />

@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify'
-import type { DegreeCode, DeptCode } from '../types.js'
+import type { DegreeCode } from '../types.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Type } from '@sinclair/typebox'
@@ -106,7 +106,7 @@ async function userPlugin(server: FastifyInstance) {
         default: ResponseType(Type.Null()),
       },
     },
-  }, async (request: FastifyRequest<{ Body: { name: string, kerberos: string, department: DeptCode, bio?: string, degree: DegreeCode, cgpa: string, resumePath?: string } }>, reply) => {
+  }, async (request: FastifyRequest<{ Body: { name: string, kerberos: string, department: string, bio?: string, degree: DegreeCode, cgpa: string, resumePath?: string } }>, reply) => {
     // create student
     const { kerberos, department, bio, degree, cgpa, resumePath, name } = request.body
     await addOrUpdateStudent(kerberos, degree, cgpa, bio, resumePath)

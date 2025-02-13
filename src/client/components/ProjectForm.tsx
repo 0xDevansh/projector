@@ -1,7 +1,7 @@
 'use client'
 
 import type { Project } from '../../models/ProfessorProject.js'
-import type { DegreeCode, DeptCode, ProjectDuration, ProjectType } from '../../types.js'
+import type { DegreeCode, ProjectDuration, ProjectType } from '../../types.js'
 import {
   zodResolver,
 } from '@hookform/resolvers/zod'
@@ -18,7 +18,7 @@ import {
 } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as z from 'zod'
-import { degreeName, deptName, projectDuration, projectType } from '../../types.js'
+import { centreNames, degreeName, deptNames, projectDuration, projectType, schoolNames } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import usePersist from '../hooks/usePersist.js'
@@ -515,13 +515,36 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
                       </MultiSelectorTrigger>
                       <MultiSelectorContent>
                         <MultiSelectorList>
+                          <span className="font-semibold">Department</span>
                           {
-                            Object.keys(deptName).map(dCode => (
+                            Object.entries(deptNames).map(([dCode, dName]) => (
                               <MultiSelectorItem
                                 key={dCode}
                                 value={dCode}
                               >
-                                {deptName[dCode as DeptCode]}
+                                {dName}
+                              </MultiSelectorItem>
+                            ))
+                          }
+                          <span className="font-semibold">Centre</span>
+                          {
+                            Object.entries(centreNames).map(([dCode, dName]) => (
+                              <MultiSelectorItem
+                                key={dCode}
+                                value={dCode}
+                              >
+                                {dName}
+                              </MultiSelectorItem>
+                            ))
+                          }
+                          <span className="font-semibold">School</span>
+                          {
+                            Object.entries(schoolNames).map(([dCode, dName]) => (
+                              <MultiSelectorItem
+                                key={dCode}
+                                value={dCode}
+                              >
+                                {dName}
                               </MultiSelectorItem>
                             ))
                           }

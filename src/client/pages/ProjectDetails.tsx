@@ -23,7 +23,7 @@ import {
 import React, { useContext } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
-import { degreeName, deptName, projectDuration, projectType,
+import { degreeName, deptData, projectDuration, projectType,
 } from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
 import ProjectApplicationForm from '../components/ProjectApplicationForm.js'
@@ -112,7 +112,7 @@ export default function ProjectDetails() {
                   <div className="flex items-center gap-2">
                     <GraduationCapIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Professor:</span>
-                    <span>{`${project.prof.user.name} (${deptName[project.prof.user.deptCode as DeptCode]})`}</span>
+                    <span>{`${project.prof.user.name} (${deptData[project.prof.user.deptCode as DeptCode].name})`}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <BriefcaseIcon className="w-5 h-5 text-muted-foreground" />
@@ -206,7 +206,7 @@ export default function ProjectDetails() {
                             key={ed}
                             variant="outline"
                           >
-                            {deptName[ed]}
+                            {deptData[ed].name}
                           </Badge>
                         ))
                       : 'All are eligible'}
@@ -388,7 +388,7 @@ function ApplicationsCard({ project }: { project: Project }) {
               {applications.map(app => (
                 <TableRow key={app.id}>
                   <TableCell className="font-medium">{app.student.user.name}</TableCell>
-                  <TableCell>{deptName[app.student.user.deptCode as DeptCode]}</TableCell>
+                  <TableCell>{deptData[app.student.user.deptCode as DeptCode].name}</TableCell>
                   <TableCell>{app.student.cgpa}</TableCell>
                   <TableCell>{dayjs(app.createdAt).format('DD MMM YYYY')}</TableCell>
                   <TableCell>

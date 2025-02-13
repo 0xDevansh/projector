@@ -42,6 +42,7 @@ export function Home() {
               text: 'Post a Project',
               handler: onPostProject,
             }}
+            disabled={ctx?.user?.type === 'student'}
           />
           <FeatureCard
             icon={<UserPlus className="w-8 h-8 text-indigo-700" />}
@@ -76,7 +77,7 @@ export function Home() {
   )
 }
 
-function FeatureCard({ icon, title, description, action }: any) {
+function FeatureCard({ icon, title, description, action, disabled }: any) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col h-full">
       <div className="mb-4">{icon}</div>
@@ -86,6 +87,7 @@ function FeatureCard({ icon, title, description, action }: any) {
         <Button
           onClick={action.handler}
           className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700"
+          disabled={disabled}
         >
           {action.text}
         </Button>

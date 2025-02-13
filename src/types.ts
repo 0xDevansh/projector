@@ -16,24 +16,75 @@ export const degreeName = {
   mdes: 'MDes',
 }
 export type DegreeCode = keyof typeof degreeName
-export const deptName = {
-  am: 'Applied Mechanics',
-  beb: 'Biochemical Engineering and Biotechnology',
-  chemical: 'Chemical Engineering',
-  chemistry: 'Chemistry',
-  civil: 'Civil Engineering',
-  cse: 'Computer Science and Engineering',
-  design: 'Design',
-  ee: 'Electrical Engineering',
-  dese: 'Energy Science and Engineering',
-  hss: 'Humanities and Social Sciences',
-  mse: 'Materials Science and Engineering',
-  maths: 'Mathematics',
-  mech: 'Mechanical Engineering',
-  physics: 'Physics',
-  textile: 'Textile and Fibre Engineering',
+// export const deptName = {
+//   am: 'Applied Mechanics',
+//   beb: 'Biochemical Engineering and Biotechnology',
+//   chemical: 'Chemical Engineering',
+//   chemistry: 'Chemistry',
+//   civil: 'Civil Engineering',
+//   cse: 'Computer Science and Engineering',
+//   design: 'Design',
+//   ee: 'Electrical Engineering',
+//   dese: 'Energy Science and Engineering',
+//   hss: 'Humanities and Social Sciences',
+//   mse: 'Materials Science and Engineering',
+//   maths: 'Mathematics',
+//   mech: 'Mechanical Engineering',
+//   physics: 'Physics',
+//   textile: 'Textile and Fibre Engineering',
+// }
+export const deptData = {
+  // departments
+  am: { name: 'Applied Mechanics', type: 'department' },
+  beb: { name: 'Biochemical Engineering and Biotechnology', type: 'department' },
+  chemical: { name: 'Chemical Engineering', type: 'department' },
+  chemistry: { name: 'Chemistry', type: 'department' },
+  civil: { name: 'Civil Engineering', type: 'department' },
+  cse: { name: 'Computer Science and Engineering', type: 'department' },
+  design: { name: 'Design', type: 'department' },
+  ee: { name: 'Electrical Engineering', type: 'department' },
+  dese: { name: 'Energy Science and Engineering', type: 'department' },
+  hss: { name: 'Humanities and Social Sciences', type: 'department' },
+  mse: { name: 'Materials Science and Engineering', type: 'department' },
+  maths: { name: 'Mathematics', type: 'department' },
+  mech: { name: 'Mechanical Engineering', type: 'department' },
+  physics: { name: 'Physics', type: 'department' },
+  textile: { name: 'Textile and Fibre Engineering', type: 'department' },
+  // centres
+  care: { name: 'Centre for Applied Research in Electronics', type: 'centre' },
+  cas: { name: 'Centre for Atmospheric Sciences', type: 'centre' },
+  cart: { name: 'Centre for Automotive Research and Tribology', type: 'centre' },
+  cbme: { name: 'Centre for Biomedical Engineering', type: 'centre' },
+  csc: { name: 'Computer Services Centre', type: 'centre' },
+  etsc: { name: 'Educational Technology Services Centre', type: 'centre' },
+  tripc: { name: 'Transport Research and Injury Prevention Centre', type: 'centre' },
+  crdt: { name: 'Centre for Rural Development and Technology', type: 'centre' },
+  sense: { name: 'Centre for Sensors, Instrumentation and Cyber-Physical Systems Engineering (SeNSE)', type: 'centre' },
+  opc: { name: 'Optics and Photonics Centre', type: 'centre' },
+  // schools
+  bioschool: { name: 'Kusuma School of Biological Sciences', type: 'school' },
+  sit: { name: 'Amar Nath and Shashi Khosla School of Information Technology', type: 'school' },
+  sire: { name: 'School of Interdisciplinary Research', type: 'school' },
+  spp: { name: 'School of Public Policy', type: 'school' },
+  bhartischool: { name: 'Bharti School of Telecommunication Technology and Management', type: 'school' },
+  scai: { name: 'Yardi School of Artificial Intelligence', type: 'school' },
 }
-export type DeptCode = keyof typeof deptName
+export type DeptCode = keyof typeof deptData
+export const deptNames = Object.fromEntries(Object.entries(deptData)
+  .filter(([_code, data]) => data.type === 'department')
+  .map(([code, data]) => [code, data.name]),
+) as Record<DeptCode, string>
+
+export const centreNames = Object.fromEntries(Object.entries(deptData)
+  .filter(([_code, data]) => data.type === 'centre')
+  .map(([code, data]) => [code, data.name]),
+) as Record<DeptCode, string>
+
+export const schoolNames = Object.fromEntries(Object.entries(deptData)
+  .filter(([_code, data]) => data.type === 'school')
+  .map(([code, data]) => [code, data.name]),
+) as Record<DeptCode, string>
+
 export const projectType = {
   disa: 'Design and Innovation Summer Award',
   sura: 'Summer Undergraduate Research Award',

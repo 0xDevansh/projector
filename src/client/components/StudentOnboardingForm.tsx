@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
-import { degreeName, deptName } from '../../types.js'
+import { centreNames, degreeName, deptNames, schoolNames } from '../../types.js'
 
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
@@ -121,8 +121,21 @@ export default function StudentOnboardingForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <span className="font-semibold">Department</span>
                   {
-                    Object.entries(deptName).map(([code, name]) =>
+                    Object.entries(deptNames).map(([code, name]) =>
+                      <SelectItem key={code} value={code}>{name || 'Unknown'}</SelectItem>,
+                    )
+                  }
+                  <span className="font-semibold">Centre</span>
+                  {
+                    Object.entries(centreNames).map(([code, name]) =>
+                      <SelectItem key={code} value={code}>{name || 'Unknown'}</SelectItem>,
+                    )
+                  }
+                  <span className="font-semibold">School</span>
+                  {
+                    Object.entries(schoolNames).map(([code, name]) =>
                       <SelectItem key={code} value={code}>{name || 'Unknown'}</SelectItem>,
                     )
                   }

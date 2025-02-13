@@ -24,7 +24,7 @@ export default function About() {
   return (
     <div className="space-y-12">
       <section>
-        <h2 className="h2 font-bold">About</h2>
+        <h2 className="h2 my-5 font-bold">About</h2>
         <p className="text-lg mx-5">
 
           This project portal has been created with the collaboration of&nbsp;
