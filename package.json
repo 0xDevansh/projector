@@ -9,7 +9,7 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run build:server && vite build",
+    "build": "rm -rf dist && npm run build:server && vite build && cp -R dist/client/ dist/build_output && mv dist/build_output/ dist/client/client",
     "build:server": "tsc",
     "dev": "npm run build:server && node dist/server.js --dev",
     "lint": "eslint .",

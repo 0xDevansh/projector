@@ -11,6 +11,6 @@ export default {
   ],
   build: {
     emptyOutDir: true,
-    outDir: join(import.meta.dirname, 'dist'),
+    outDir: join(import.meta.dirname, 'dist/client'),
   },
 }
