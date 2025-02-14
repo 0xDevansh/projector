@@ -1,5 +1,5 @@
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import type { FastifyInstance } from 'fastify'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import type { ExtendedUser } from './types.js'
 import { dirname, resolve } from 'node:path'
@@ -57,6 +57,8 @@ await server.register(cookie, {
 await server.register(fastifyStatic, {
   root: resolve(dirname(fileURLToPath(import.meta.url)), '../static'),
   prefix: '/static/',
+  wildcard: false,
+  index: false,
 })
 server.decorateRequest('extendedUser', null)
 server.addHook('preHandler', (request, _reply, done) => {
@@ -66,6 +68,7 @@ server.addHook('preHandler', (request, _reply, done) => {
     done(undefined)
   })
 })
+
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, '../'),
   dev: argv.includes('--dev'),
@@ -75,6 +78,9 @@ await server.register(FastifyVite, {
 server.setErrorHandler((error, request, reply) => {
   server.log.error(error)
   reply.code(500).send({ error: `internal server error: ${error.message}`, data: null })
+})
+server.setNotFoundHandler((_request, reply) => {
+  reply.redirect('/app/not-found', 302)
 })
 
 // all /api routes
@@ -86,10 +92,8 @@ server.get('/app', (request, reply) => {
 server.get('/app/*', (request, reply) => {
   return reply.html()
 })
-
-// redirect all other routes to /app
-server.get('*', (request: FastifyRequest, reply: FastifyReply) => {
-  reply.redirect('/app', 302)
+server.get('/', (request, reply) => {
+  return reply.redirect('/app', 302)
 })
 
 await server.vite.ready()
