@@ -22,11 +22,10 @@ const faqItems = [
 
 export default function About() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-6 md:space-y-12">
       <section>
-        <h2 className="h2 my-5 font-bold">About</h2>
-        <p className="text-lg mx-5">
-
+        <h2 className="h3 md:h2 my-0 md:my-3 font-bold">About</h2>
+        <p className="text-md md:text-lg mx-5">
           This project portal has been created with the collaboration of&nbsp;
           <a
             target="_blank"
@@ -44,7 +43,7 @@ export default function About() {
       </section>
 
       <section className="bg-white px-7 py-5 rounded-xl shadow-md mx-5">
-        <h2 className="h3">Frequently Asked Questions</h2>
+        <h2 className="h4 md:h3">Frequently Asked Questions</h2>
         <Accordion type="single" collapsible className="w-full">
           {faqItems.map((item, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
