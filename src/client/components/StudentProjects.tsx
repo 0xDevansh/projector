@@ -29,9 +29,9 @@ export default function StudentProjects({ isLoggedIn }: { isLoggedIn?: boolean }
   if (!isLoggedIn) {
     return (
       <div>
-        <h2 className="h2 my-5 font-bold">Open Projects</h2>
+        <h2 className="h3 md:h2 md:my-5 font-bold">Open Projects</h2>
         {projects.length === 0 && <NoProjectsFound />}
-        <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-3 mx-2 projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <title>Projects - Projects Portal</title>
           {projects.map((proj: Project) => (
             <ProjectCard

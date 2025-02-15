@@ -26,14 +26,14 @@ export function Home() {
       <title>Home - Projects Portal</title>
 
       <div className="space-y-12 mt-5">
-        <section className="text-center py-10">
-          <h1 className="text-4xl font-bold mb-4 lexend bg-gradient-to-r from-blue-700 to-purple-700 text-transparent bg-clip-text">Welcome to Projects Portal</h1>
-          <p className="text-xl font-semibold text-slate-600 max-w-2xl mx-auto">
+        <section className="text-center py-0 md:py-6">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 lexend bg-gradient-to-r from-blue-700 to-purple-700 text-transparent bg-clip-text">Welcome to Projects Portal</h1>
+          <p className="text-md md:text-xl font-semibold text-slate-600 max-w-2xl mx-auto">
             We help professors and students collaborate for innovative research projects.
           </p>
         </section>
 
-        <section className="grid md:grid-cols-3 gap-8">
+        <section className="grid md:grid-cols-3 gap-4 md:gap-8">
           <FeatureCard
             icon={<BookOpen className="w-8 h-8 text-indigo-700" />}
             title="Professors"
@@ -65,8 +65,8 @@ export function Home() {
         </section>
 
         <section className="bg-white p-8 rounded-lg shadow-sm">
-          <h2 className="text-2xl font-semibold mb-4 text-indigo-700">How It Works</h2>
-          <ol className="list-decimal list-inside space-y-4 text-slate-700">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-indigo-700">How It Works</h2>
+          <ol className="list-decimal list-inside space-y-4 text-slate-700 text:md">
             <li>Professors post research projects with detailed descriptions and requirements.</li>
             <li>Students browse available projects and submit applications to those that interest them.</li>
             <li>Professors review applications and select suitable candidates for their projects.</li>
@@ -80,9 +80,11 @@ export function Home() {
 function FeatureCard({ icon, title, description, action, disabled }: any) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col h-full">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-slate-600 mb-4 flex-grow">{description}</p>
+      <div className="flex mb-2">
+        <div className="mr-4">{icon}</div>
+        <span className="text-md md:text-lg font-semibold mb-2">{title}</span>
+      </div>
+      <p className="text-slate-600 mb-4 flex-grow text-sm md:text-lg">{description}</p>
       {action.handler && (
         <Button
           onClick={action.handler}
