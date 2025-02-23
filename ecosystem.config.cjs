@@ -2,7 +2,6 @@ module.exports = {
   apps: [{
     name: 'projects',
     script: 'dist/server.js',
-    args: '--dev',
     watch: 'dist',
     env: {
       PORT: '8000',
