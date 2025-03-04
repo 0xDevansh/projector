@@ -421,7 +421,6 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
               <FormControl>
                 <Input
                   placeholder=""
-
                   type="number"
                   {...field}
                 />

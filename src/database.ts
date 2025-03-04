@@ -76,7 +76,7 @@ export async function createOrUpdateUser(data: { email?: string, name?: string, 
     .execute()
 }
 
-export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, cgpa: string, bio?: string, resumePath?: string) {
+export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, cgpa: string, yearOfStudy: number, bio?: string, resumePath?: string) {
   const user = await userRepo.findOneBy({ kerberos })
   if (!user)
     return
@@ -90,8 +90,9 @@ export async function addOrUpdateStudent(kerberos: string, degree: DegreeCode, c
       cgpa,
       resumePath,
       user,
+      yearOfStudy,
     }])
-    .orUpdate(['bio', 'degree', 'cgpa', 'resumePath'], ['kerberos'])
+    .orUpdate(['bio', 'degree', 'cgpa', 'resumePath', 'yearOfStudy'], ['kerberos'])
     .execute()
 }
 
@@ -219,11 +220,14 @@ export async function getApplicationsForStudent(studentKerberos: string) {
     // .select('*')
     .leftJoinAndSelect('application.student', 'student')
     .leftJoinAndSelect('student.user', 'studentUser')
+    .leftJoinAndSelect('application.project', 'project')
+    .leftJoinAndSelect('project.prof', 'prof')
+    .leftJoinAndSelect('prof.user', 'profUser')
     .where('studentKerberos = :studentKerberos', { studentKerberos })
   return await qBuilder.getMany()
 }
 
-export async function getAppliedProjects(studentKerberos: string) {
+export async function getAppliedProjectIds(studentKerberos: string) {
   const qBuilder = applicationRepo.createQueryBuilder('application')
     .select('projectId')
     .from(Application, 'application')

@@ -19,6 +19,9 @@ export class Student {
   @Column('text', { nullable: true })
   resumePath: string
 
+  @Column('int')
+  yearOfStudy: number
+
   @OneToOne(() => User, { eager: true, onUpdate: 'NO ACTION' })
   @JoinColumn()
   user: User

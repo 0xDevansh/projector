@@ -18,6 +18,7 @@ import { Textarea } from './ui/textarea.js'
 const formSchema = z.object({
   department: z.string(),
   bio: z.string().optional(),
+  yearOfStudy: z.coerce.number().int().gte(1).lte(10),
   degree: z.string(),
   cgpa: z.string().refine((v) => {
     return !Number.isNaN(Number.parseFloat(v)) && v.includes('.') && v.split('.')[1].length === 2
@@ -142,6 +143,24 @@ export default function StudentOnboardingForm() {
                 </SelectContent>
               </Select>
               <FormDescription>Your current department</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="yearOfStudy"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Year of study</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>The year you are currently in</FormDescription>
               <FormMessage />
             </FormItem>
           )}

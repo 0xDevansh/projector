@@ -9,7 +9,7 @@ import {
   getApplicationById,
   getApplications,
   getApplicationsForStudent,
-  getAppliedProjects,
+  getAppliedProjectIds,
   getProjectById,
   getProjects,
   updateProject,
@@ -124,7 +124,7 @@ async function projectPlugin(server: FastifyInstance) {
       await reply.code(403).send({ error: 'Forbidden', data: null })
       return
     }
-    const appliedProjects = await getAppliedProjects(kerberos)
+    const appliedProjects = await getAppliedProjectIds(kerberos)
     await reply.code(200).send({ error: null, data: appliedProjects })
   })
 

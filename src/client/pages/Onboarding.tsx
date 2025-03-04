@@ -23,7 +23,7 @@ export default function Onboarding() {
     <div>
       <PageHeader title="Onboarding" />
       <title>Onboarding - Projects Portal</title>
-      <h1 className="h3 font-normal lexend">Please enter your details</h1>
+      <h1 className="h4 md:h3 text-lg md:text-2xl">Please enter your details</h1>
       {authCtx?.user?.type === 'student'
         ? <StudentOnboardingForm />
         : <ProfOnboardingForm />}

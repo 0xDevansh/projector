@@ -56,6 +56,8 @@ export const StudentType = Type.Object({
   degree: Type.String(),
   cgpa: Type.String(),
   resumePath: Nullable(Type.String()),
+  yearOfStudy: Type.Integer(),
+
 })
 export const ProfType = Type.Object({
   kerberos: Type.String(),
@@ -101,15 +103,16 @@ async function userPlugin(server: FastifyInstance) {
         cgpa: Type.String(),
         resumePath: Type.Optional(Type.String()),
         name: Type.String(),
+        yearOfStudy: Type.String(),
       }),
       response: {
         default: ResponseType(Type.Null()),
       },
     },
-  }, async (request: FastifyRequest<{ Body: { name: string, kerberos: string, department: string, bio?: string, degree: DegreeCode, cgpa: string, resumePath?: string } }>, reply) => {
+  }, async (request: FastifyRequest<{ Body: { name: string, kerberos: string, yearOfStudy: number, department: string, bio?: string, degree: DegreeCode, cgpa: string, resumePath?: string } }>, reply) => {
     // create student
-    const { kerberos, department, bio, degree, cgpa, resumePath, name } = request.body
-    await addOrUpdateStudent(kerberos, degree, cgpa, bio, resumePath)
+    const { kerberos, department, bio, degree, cgpa, resumePath, name, yearOfStudy } = request.body
+    await addOrUpdateStudent(kerberos, degree, cgpa, yearOfStudy, bio, resumePath)
     await createOrUpdateUser({ deptCode: department, email: `${kerberos}@iitd.ac.in`, type: 'student', name })
     await reply.code(200).send({ error: null, data: null })
   })
