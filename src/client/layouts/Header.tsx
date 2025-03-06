@@ -1,3 +1,4 @@
+import { CircleUserRoundIcon } from 'lucide-react'
 import React, { useContext } from 'react'
 import { Link, NavLink } from 'react-router'
 import { AuthContext } from '../AuthContext.js'
@@ -12,17 +13,18 @@ export function Header() {
   const authCtx = useContext(AuthContext)
 
   return (
-    <header className="flex flex-col md:flex-row justify-around px-4 md:px-8 py-2 border-2 bg-gray-50 drop-shadow-md items-center space-y-2">
+    <header className="flex flex-col md:flex-row justify-around px-4 md:px-8 py-2 bg-gray-50 drop-shadow-md items-center space-y-2 sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <h1 className="lexend font-bold h4 md:h2 text-indigo-700"><Link to="/app">Projects Portal</Link></h1>
-      <div className="space-x-8 text-md md:text-lg flex justify-between">
-        <NavLink to="/app/about" className="hover-link font-semibold">About</NavLink>
-        <NavLink to="/app/projects" className="hover-link font-semibold">Projects</NavLink>
+      <div className="space-x-8 text-md md:text-lg flex justify-between items-center text-gray-700">
+        <NavLink to="/app/about" className="font-semibold hover:underline">About</NavLink>
+        <NavLink to="/app/projects" className="font-semibold hover:underline">Projects</NavLink>
         { authCtx?.isLoggedIn
           ? (
-              // Logout button
+              // Profile page
               <div>
-                <a href="/api/logout" className={cn(buttonVariants({ variant: 'destructive' }), 'hidden md:inline')}>Logout</a>
-                <a href="/api/logout" className="md:hidden font-semibold text-red-800">Logout</a>
+                <Link to="/app/profile">
+                  <CircleUserRoundIcon />
+                </Link>
               </div>
             )
           : (

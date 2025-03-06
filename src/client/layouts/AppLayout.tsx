@@ -46,6 +46,9 @@ export default function AppLayout() {
         case 'projectClosed':
           toast({ title: 'Closed the project' })
           break
+        case 'profileUpdated':
+          toast({ title: 'Updated profile' })
+          break
       }
       location.state.toast = undefined
     }

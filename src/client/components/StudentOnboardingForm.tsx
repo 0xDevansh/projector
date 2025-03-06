@@ -1,11 +1,12 @@
+import type { Student } from '../../models/Student.js'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import React, { useContext, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
+
 import { z } from 'zod'
 import { centreNames, degreeName, deptNames, schoolNames } from '../../types.js'
-
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import { loginLink } from '../layouts/Header.js'
@@ -38,7 +39,7 @@ const formSchema = z.object({
   }, { message: 'File is larger than 2mb' }),
 })
 
-export default function StudentOnboardingForm() {
+export default function StudentOnboardingForm({ formAction, student, deptCode }: { formAction: 'create' | 'edit', student?: Student, deptCode?: string }) {
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
   const { toast } = useToast()
@@ -48,8 +49,12 @@ export default function StudentOnboardingForm() {
     }
   })
 
+  if (formAction === 'edit' && (!student || !deptCode)) {
+    return <p className="text-lg text-red-800">Error: Student not found</p>
+  }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: formAction === 'create' ? undefined : { ...student, department: deptCode },
   })
   const fileRef = form.register('resume')
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -69,7 +74,6 @@ export default function StudentOnboardingForm() {
       const formData = new FormData()
       formData.append('resume', values.resume[0], `${authContext?.user?.user.kerberos}.pdf`)
 
-      // const resumeRes = await axios.post('/api/user/resume', formData, { headers: { 'content-type': 'multipart/form-data' } })
       const resumeRes = await fetch('/api/user/resume', { method: 'POST', body: formData })
       if (resumeRes.status !== 200) {
         console.error('Failed to upload resume')
@@ -77,7 +81,7 @@ export default function StudentOnboardingForm() {
         return
       }
     }
-    navigate('/app')
+    navigate('/app/profile', { state: { toast: { code: 'profileUpdated' } } })
   }
 
   return (
@@ -89,7 +93,7 @@ export default function StudentOnboardingForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel required>Degree</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={formAction === 'edit'}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select degree" />
@@ -115,7 +119,7 @@ export default function StudentOnboardingForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel required>Department</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value as string | undefined}>
+              <Select onValueChange={field.onChange} defaultValue={field.value as string | undefined} disabled={formAction === 'edit'}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
@@ -153,7 +157,7 @@ export default function StudentOnboardingForm() {
           name="yearOfStudy"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Year of study</FormLabel>
+              <FormLabel required>Year of study</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -214,13 +218,13 @@ export default function StudentOnboardingForm() {
                 <FormControl>
                   <Input type="file" placeholder="shadcn" {...fileRef} />
                 </FormControl>
-                <FormDescription>Upload a PDF, up to 2mb</FormDescription>
+                <FormDescription>Upload a PDF, up to 2mb (optional)</FormDescription>
                 <FormMessage />
               </FormItem>
             )
           }}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{formAction === 'edit' ? 'Save changes' : 'Submit'}</Button>
       </form>
     </Form>
 

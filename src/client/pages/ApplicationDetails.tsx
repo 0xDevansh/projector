@@ -1,9 +1,9 @@
 import type { Application } from '../../models/Application.js'
 
 import type { DegreeCode, DeptCode } from '../../types.js'
-import { Calendar, FileUserIcon, GraduationCapIcon, SchoolIcon, UserIcon } from 'lucide-react'
+import { Calendar, FileUserIcon, GraduationCapIcon, MailIcon, SchoolIcon, UserIcon } from 'lucide-react'
 import React from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import useSWR from 'swr'
 import { degreeName, deptData } from '../../types.js'
 import { buttonVariants } from '../components/ui/button.js'
@@ -25,6 +25,14 @@ export default function ApplicationDetails() {
     return <NotFound />
   }
   const application = data.data as Application
+  let yearSuffix = 'th'
+  if (application.student?.yearOfStudy === 1)
+    yearSuffix = 'st'
+  if (application.student?.yearOfStudy === 2)
+    yearSuffix = 'nd'
+  if (application.student?.yearOfStudy === 3)
+    yearSuffix = 'rd'
+
   return (
     <div className="container mx-auto py-8 px-4 flex-col gap-4">
       <title>Application - Projects Portal</title>
@@ -41,6 +49,14 @@ export default function ApplicationDetails() {
               <span>{application.student.user.name}</span>
             </div>
             <div className="flex items-center gap-2">
+              <MailIcon className="w-5 h-5 text-muted-foreground" />
+              <span className="font-semibold">Email:</span>
+              <Link to={`mailto:${application.student.user.kerberos}@iitd.ac.in`} className="text-blue-800 hover:underline">
+                {application.student.user.kerberos}
+                @iitd.ac.in
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
               <SchoolIcon className="w-5 h-5 text-muted-foreground" />
               <span className="font-semibold">Department:</span>
               <span>{deptData[application.student.user.deptCode as DeptCode].name}</span>
@@ -52,8 +68,11 @@ export default function ApplicationDetails() {
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-muted-foreground" />
-              <span className="font-semibold">Year of joining:</span>
-              <span>{`20${application.student.kerberos.substring(3, 5)}`}</span>
+              <span className="font-semibold">Year of study:</span>
+              <span>
+                {application.student.yearOfStudy}
+                {yearSuffix}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <FileUserIcon className="w-5 h-5 text-muted-foreground" />

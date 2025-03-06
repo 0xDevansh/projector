@@ -12,7 +12,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { cn } from '../utils.js'
 
 export default function ProfileComponent({ user, isSelf }: { user: ExtendedUser, isSelf: boolean }) {
-  const { data, error, isLoading } = useSWR(`/api/applications/mine`)
+  // fetch applications only if student
+  let { data, error, isLoading } = { data: { data: [] }, error: undefined, isLoading: false }
+  if (user.type === 'student') {
+    const applicationCall = useSWR(`/api/applications/mine`)
+    data = applicationCall.data
+    error = applicationCall.error
+    isLoading = applicationCall.isLoading
+  }
+
   let applications: Application[] = []
 
   if (!error && !isLoading && data.data) {
@@ -27,9 +35,14 @@ export default function ProfileComponent({ user, isSelf }: { user: ExtendedUser,
     yearSuffix = 'rd'
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <h2 className="h3 md:h2">
-        Your Profile
-      </h2>
+      <div className="flex justify-between">
+        <h2 className="h3 md:h2">
+          Your Profile
+        </h2>
+        <div>
+          <a href="/api/logout" className={buttonVariants({ variant: 'destructive' })}>Logout</a>
+        </div>
+      </div>
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <div>
@@ -39,10 +52,12 @@ export default function ProfileComponent({ user, isSelf }: { user: ExtendedUser,
             </CardTitle>
             <CardDescription className="text-base">{deptData[user.user.deptCode as DeptCode].name}</CardDescription>
           </div>
-          <Link to="/app/profile/edit" className={cn('gap-2', buttonVariants({ variant: 'outline' }))}>
-            <FileEdit className="w-4 h-4" />
-            Edit Profile
-          </Link>
+          {user.type === 'student' && (
+            <Link to="/app/profile/edit" className={cn('gap-2', buttonVariants({ variant: 'outline' }))}>
+              <FileEdit className="w-4 h-4" />
+              Edit Profile
+            </Link>
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Profile Details */}

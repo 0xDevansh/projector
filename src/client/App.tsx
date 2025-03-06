@@ -9,6 +9,7 @@ import AppLayout from './layouts/AppLayout.js'
 import About from './pages/About.js'
 import ApplicationDetails from './pages/ApplicationDetails.js'
 import { CreateProject } from './pages/CreateProject.js'
+import EditProfile from './pages/EditProfile.js'
 import { EditProject } from './pages/EditProject.js'
 import { Home } from './pages/Home.js'
 import NotFound from './pages/NotFound.js'
@@ -39,6 +40,7 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
                   <Route path="project/:id/edit" element={<EditProject />} />
                   <Route path="project/:projectId/applications/:applicationId" element={<ApplicationDetails />} />
                   <Route path="profile" element={<Profile />} />
+                  <Route path="profile/edit" element={<EditProfile />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
