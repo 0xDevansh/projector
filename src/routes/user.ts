@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import type { DegreeCode } from '../types.js'
 import { dirname, resolve } from 'node:path'
+import { env } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Type } from '@sinclair/typebox'
 import multer from 'fastify-multer'
@@ -91,6 +92,40 @@ async function userPlugin(server: FastifyInstance) {
     if (!user)
       await reply.code(400).send({ data: null, error: 'user not found' })
     else await reply.code(200).send({ error: null, data: user })
+  })
+
+  server.post('/api/support-message', {
+    schema: {
+      body: Type.Object({
+        message: Type.String(),
+        type: Type.String(),
+      }),
+      response: {
+        default: ResponseType(Type.Null()),
+      },
+    },
+  }, async (request: FastifyRequest<{ Body: { message: string, type: string } }>, reply) => {
+    const { message, type } = request.body
+    if (!message || !type) {
+      return reply.code(400).send({ data: null, error: 'Body required' })
+    }
+    if (!request.extendedUser?.user) {
+      return reply.code(401).send({ data: null, error: 'Unauthorized' })
+    }
+    const user = request.extendedUser.user
+    let subject = `🐞 Bug report from ${user.kerberos}`
+    if (type === 'feature')
+      subject = `🌟 Feature request from ${user.kerberos}`
+    if (type === 'other')
+      subject = `❓ Query from ${user.kerberos}`
+
+    await request.mailTransporter.sendMail({
+      from: `"${env.EMAIL_NAME}" <${env.EMAIL_ID}>`,
+      to: env.EMAIL_DESTINATION,
+      subject,
+      text: `Query type: ${type}\nName: ${user.name}\nUser type: ${user.type}\nEmail: ${user.email}\n\n${message}`,
+    })
+    await reply.code(200).send({ error: null, data: null })
   })
 
   server.post('/api/user/student', {
