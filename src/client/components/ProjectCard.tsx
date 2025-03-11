@@ -35,7 +35,7 @@ export default function ProjectCard({ project, applied, profView, isLoggedIn }: 
         <p className="text-sm mb-4 text-ellipsis overflow-hidden text-nowrap">{project.description}</p>
         <div className="flex flex-wrap gap-2 mb-2">
           {project.projectType.map((type) => {
-            const pType = ['disa', 'sura'].includes(type)
+            const pType = ['disa', 'sura', 'btp', 'mtp'].includes(type)
               ? type.toUpperCase()
               : type[0].toUpperCase() + type.substring(1)
 
