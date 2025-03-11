@@ -297,6 +297,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
               <span className="font-semibold">Applied on: </span>
               {dayjs(app.createdAt).format('DD MMM YYYY')}
             </p>
+            <Link to={`/app/project/${project.id}/applications/${app.id}`} className="text-primary hover:underline">See application</Link>
           </CardContent>
         </Card>
       )

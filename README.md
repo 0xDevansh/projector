@@ -37,9 +37,12 @@ pnpm run deploy
 ```
 
 ## Roadmap
-#### v0.2.0 (Current)
+#### v0.2.0
 - [x] Add profile page
 - [x] Edit profile option
+#### v1.2.1 (Current)
+- [x] Add support form
+- [x] Allow students to view application
 #### v0.3.0
 - [ ] Public profile viewing
 - [ ] Profile pages for faculty

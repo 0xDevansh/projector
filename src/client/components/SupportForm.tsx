@@ -37,12 +37,12 @@ export default function SupportForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="message"
           render={({ field }) => (
-            <FormItem className="space-y-[2px]">
+            <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
                 <Textarea {...field} />

@@ -195,19 +195,19 @@ async function projectPlugin(server: FastifyInstance) {
       await reply.code(400).send({ data: null, error: 'id not found' })
       return
     }
-    if (request.extendedUser?.type === 'student') {
-      await reply.code(400).send({ data: null, error: 'unauthorised' })
-      return
-    }
 
     const application = await getApplicationById(request.params.id)
-    if (!application) {
-      await reply.code(400).send({ data: null, error: 'application not found' })
+
+    const studentIsApplicant = request.extendedUser?.user.kerberos === application?.studentKerberos
+    const profIsPoster = request.extendedUser?.user.kerberos === application?.project.profKerberos
+
+    if (!studentIsApplicant && !profIsPoster) {
+      await reply.code(403).send({ data: null, error: 'forbidden' })
       return
     }
 
-    if (application.project.profKerberos !== request.extendedUser?.user.kerberos) {
-      await reply.code(403).send({ error: 'Forbidden', data: null })
+    if (!application) {
+      await reply.code(400).send({ data: null, error: 'application not found' })
       return
     }
     await reply.code(200).send({ error: null, data: application })
