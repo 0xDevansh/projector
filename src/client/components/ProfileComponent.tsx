@@ -107,7 +107,7 @@ export default function ProfileComponent({ user, isSelf }: { user: ExtendedUser,
               user.type === 'student' && (
                 <div>
                   <h3 className="mb-2 font-semibold text-base">Bio</h3>
-                  <p className="text-sm break-all">
+                  <p className="text-sm break-words">
                     {user.student?.bio}
                   </p>
                 </div>

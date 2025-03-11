@@ -43,10 +43,10 @@ pnpm run deploy
 #### v1.2.1 (Current)
 - [x] Add support form
 - [x] Allow students to view application
-#### v0.3.0
-- [ ] Public profile viewing
-- [ ] Profile pages for faculty
-- [ ] Add application withdrawal option
+#### Upcoming
+- [ ] Public profile options
+- [ ] Profile pages and onboarding for faculty
+- [ ] Application withdrawal option
 - [ ] Fix resume bugs
 
 ## Some resources for reference
