@@ -40,7 +40,7 @@ pnpm run deploy
 #### v0.2.0
 - [x] Add profile page
 - [x] Edit profile option
-#### v1.2.1 (Current)
+#### v0.2.1 (Current)
 - [x] Add support form
 - [x] Allow students to view application
 #### Upcoming
