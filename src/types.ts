@@ -91,6 +91,8 @@ export const projectType = {
   major: 'Major Project',
   minor: 'Minor Project',
   design: 'Design Project',
+  btp: 'B.Tech Project',
+  mtp: 'M.Tech Project',
 }
 export type ProjectType = keyof typeof projectType
 export const projectDuration = {

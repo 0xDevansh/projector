@@ -118,7 +118,7 @@ export default function ProjectDetails() {
                     <BriefcaseIcon className="w-5 h-5 text-muted-foreground" />
                     <span className="font-semibold">Type:</span>
                     {project.projectType.map((type: ProjectType) => {
-                      const pType = ['disa', 'sura'].includes(type)
+                      const pType = ['disa', 'sura', 'btp', 'mtp'].includes(type)
                         ? type.toUpperCase()
                         : type[0].toUpperCase() + type.substring(1)
 
