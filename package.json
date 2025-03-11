@@ -14,7 +14,7 @@
     "dev": "npm run build:server && node dist/server.js --dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "deploy": "echo 'Pulling from Github...' && git pull origin main --quiet && echo 'Installing packages...' && pnpm --silent install && echo 'Building...' && pnpm build && echo 'Restarting process...' && pm2 restart projects --silent && echo 'Done!'"
+    "deploy": "echo 'Pulling from Github...' && git pull origin deploy --quiet && echo 'Installing packages...' && pnpm --silent install && echo 'Building...' && pnpm build && echo 'Restarting process...' && pm2 restart projects --silent && echo 'Done!'"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",
@@ -58,6 +58,7 @@
     "multer": "1.4.5-lts.1",
     "nanoid": "^5.0.9",
     "node-jsonwebtoken": "^0.0.1",
+    "nodemailer": "^6.10.0",
     "pino-pretty": "^13.0.0",
     "react": "^18.2.0",
     "react-day-picker": "8.10.1",
@@ -78,6 +79,7 @@
     "@antfu/eslint-config": "^3.12.1",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.2",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",

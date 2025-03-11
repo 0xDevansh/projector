@@ -80,7 +80,7 @@ export default function ProjectCard({ project, applied, profView, isLoggedIn }: 
         {applied && (
           <div className="text-md font-semibold text-green-900 inline-flex gap-1">
             <CircleCheckIcon />
-            <span>You have applied</span>
+            <span>Applied</span>
           </div>
         )}
         { isLoggedIn && !applied

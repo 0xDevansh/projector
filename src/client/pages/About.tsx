@@ -1,5 +1,8 @@
 import React from 'react'
+import { AuthContext } from '../AuthContext.js'
+import SupportForm from '../components/SupportForm.js'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion.js'
+import { loginLink } from '../layouts/Header.js'
 
 const faqItems = [
   {
@@ -21,11 +24,13 @@ const faqItems = [
 ]
 
 export default function About() {
+  const authCtx = React.useContext(AuthContext)
   return (
-    <div className="space-y-6 md:space-y-12">
+    <div className="gap-y-6 flex flex-col">
+      <title>About - Projects Portal</title>
       <section>
         <h2 className="h3 md:h2 my-0 md:my-3 font-bold">About</h2>
-        <p className="text-md md:text-lg mx-5">
+        <p className="text-sm md:text-lg mx-5">
           This project portal has been created with the collaboration of&nbsp;
           <a
             target="_blank"
@@ -37,7 +42,7 @@ export default function About() {
           {' '}
           and&nbsp;
           <a target="_blank" href="https://sac.iitd.ac.in/" className="text-primary hover:underline">Student Affair's Council</a>
-          . This is a prototype build, which means that it lacks the some other planned features.
+          . This is a prototype build, which means that it lacks some other planned features.
           We are open to suggestions and feedback, so feel free to reach out to us.
         </p>
       </section>
@@ -47,8 +52,8 @@ export default function About() {
         <Accordion type="single" collapsible className="w-full">
           {faqItems.map((item, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-[16px]">{item.question}</AccordionTrigger>
-              <AccordionContent className="text-[14px]">{item.answer}</AccordionContent>
+              <AccordionTrigger className="text-base">{item.question}</AccordionTrigger>
+              <AccordionContent className="text-sm md:text-base">{item.answer}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
@@ -56,27 +61,35 @@ export default function About() {
 
       <section className="bg-white px-7 py-5 rounded-xl shadow-md mx-5">
         <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
-        <p className="mb-4">
-          Have any questions or suggestions? Found a bug? (we're sure there might be some lurking)
-          Feel free to contact us from any of the below options. New ideas are welcome, though keep in mind that this is
-          a prototype version of the website.
+        <p className="mb-4 text-sm md:text-base">
+          Have any questions or suggestions? Found a bug?
+          Feel free to contact us.
+
+          Your message will be sent straight to the
+          lead developer.
         </p>
-        <ul className="space-y-2">
-          <li>
-            <strong>Email:</strong>
-            {' '}
-            <a target="_blank" href="mailto:me2241111@mech.iitd.ac.in" className="text-indigo-600 hover:underline">
-              me2241111@mech.iitd.ac.in
-            </a>
-          </li>
-          <li>
-            <strong>GitHub Issues:</strong>
-            {' '}
-            <a target="_blank" href="https://github.com/0xDevansh/projector/issues" className="text-indigo-600 hover:underline">
-              Go to GitHub
-            </a>
-          </li>
-        </ul>
+        <div className="text-sm md:text-base">
+          {
+            authCtx?.user?.user
+              ? <SupportForm />
+              : (
+                  <p className="font-semibold">
+                    Please
+                    {' '}
+                    <a href={loginLink} className="text-primary hover:underline">log in</a>
+                    {' '}
+                    to access the support form
+                  </p>
+                )
+          }
+        </div>
+
+        <p className="mt-4 text-sm md:text-base">
+          Alternatively, you can email:
+          {' '}
+          <a href="mailto:me2241111@iitd.ac.in" className="text-primary hover:underline">me2241111@iitd.ac.in</a>
+        </p>
+
       </section>
     </div>
   )

@@ -1,12 +1,13 @@
 # Projector
 
+This is the repository for SAC x DevClub's project portal. This promotes the discovery of projects and research opportunities for students with the professors at IIT Delhi.
 Projector is deployed at https://projects.apps.iitd.ac.in/app
 
 ## Setting up a development environment
 
-All tools are installed by `nix develop` if you use Nix.
+All tools can be installed with `nix develop` if you use Nix.
 
-Required tools:
+Required packages:
 - Node.js (>= 22 LTS)
 - pnpm (recommended)
 - sqlite3
@@ -36,11 +37,17 @@ pnpm run deploy
 ```
 
 ## Roadmap
-- [x] Add profile editing
-- [ ] Implement profile viewing
-- [ ] Add application withdrawal and other options
+#### v0.2.0
+- [x] Add profile page
+- [x] Edit profile option
+#### v0.2.1 (Current)
+- [x] Add support form
+- [x] Allow students to view application
+#### Upcoming
+- [ ] Public profile options
+- [ ] Profile pages and onboarding for faculty
+- [ ] Application withdrawal option
 - [ ] Fix resume bugs
-- [ ] Set up and test email system
 
 ## Some resources for reference
 - [Form creator](https://www.shadcn-form.com/playground)

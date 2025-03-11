@@ -13,6 +13,7 @@ import fastifyStatic from '@fastify/static'
 import FastifyVite from '@fastify/vite'
 import { config } from 'dotenv'
 import { fastify } from 'fastify'
+import nodemailer from 'nodemailer'
 import { getAuthUser } from './authHook.js'
 import { initDatabase } from './database.js'
 import apiPlugin from './routes/api.js'
@@ -21,6 +22,7 @@ import 'reflect-metadata'
 declare module 'fastify' {
   interface FastifyRequest {
     extendedUser: ExtendedUser | null
+    mailTransporter: nodemailer.Transporter
   }
 }
 
@@ -40,10 +42,25 @@ const devLogger = {
   },
 }
 
+// set up nodeMailer instance
+if (!env.EMAIL_ID || !env.EMAIL_PASSWORD || !env.EMAIL_NAME || !env.EMAIL_DESTINATION) {
+  throw new Error('EMAIL_ID or EMAIL_PASSWORD or EMAIL_NAME or EMAIL_DESTINATION is missing in .env')
+}
+const mailTransporter = nodemailer.createTransport({
+  host: 'smtp.iitd.ac.in',
+  port: 465,
+  secure: true, // true for port 465, false for other ports
+  auth: {
+    user: env.EMAIL_ID,
+    pass: env.EMAIL_PASSWORD,
+  },
+})
+
 // setup server, add middleware
 const server: FastifyInstance<Server, IncomingMessage, ServerResponse>
   = fastify({ logger: env.ENV === 'dev' ? devLogger : false }).withTypeProvider<TypeBoxTypeProvider>()
 
+server.decorateRequest('mailTransporter', { getter: () => mailTransporter })
 await server.register(multipart)
 // await server.register(multer.contentParser)
 await server.register(helmet, { global: true, contentSecurityPolicy: false })
