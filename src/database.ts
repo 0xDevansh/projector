@@ -63,6 +63,7 @@ export async function getExtendedUserByKerberos(kerberos: string): Promise<Exten
 
 const kerberosToDeptCode = {
   am: 'am',
+  bb: 'beb',
   ch: 'chemical',
   ce: 'civil',
   cs: 'cse',

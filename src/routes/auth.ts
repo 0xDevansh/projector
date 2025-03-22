@@ -67,7 +67,6 @@ export default async (server: FastifyInstance) => {
         state,
         grant_type,
       })
-      console.log(response.data)
       if (response.status === 200) {
         // sign the user with JWT and set the cookie
         const token = await jwtUser.sign({

@@ -47,6 +47,7 @@ pnpm run deploy
 - [x] Add BTP and MTP as project type
 #### v0.2.3 (Current)
 - [x] Fixed a critical bug on onboarding
+- [x] Fixed a bug that showed resume as null
 #### Upcoming
 - [ ] Public profile options
 - [ ] Profile pages and onboarding for faculty

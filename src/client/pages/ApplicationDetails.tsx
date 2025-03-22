@@ -6,10 +6,8 @@ import React from 'react'
 import { Link, useParams } from 'react-router'
 import useSWR from 'swr'
 import { degreeName, deptData } from '../../types.js'
-import { buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Separator } from '../components/ui/separator.js'
-import { cn } from '../utils.js'
 import NotFound from './NotFound.js'
 
 export default function ApplicationDetails() {
@@ -79,10 +77,7 @@ export default function ApplicationDetails() {
               <span className="font-semibold">Resume:</span>
               {application.student.resumePath
                 ? (
-                    <a
-                      className={cn(buttonVariants({ variant: 'default' }), 'py-4')}
-                      href={`/api/user/${application.student.kerberos}/resume`}
-                    >
+                    <a target="_blank" href={`/static/resume/${application.student?.resumePath}`} className="text-indigo-600 hover:underline text-base">
                       View Resume
                     </a>
                   )
