@@ -43,8 +43,7 @@ export default function ProjectApplicationForm({ project, authCtx }: { project: 
   }
   async function onSubmit(values: z.infer < typeof formSchema >) {
     try {
-      const res = await axios.post(`/api/project/${project.id}/applications`, { ...values, projectId: project.id, studentKerberos: authCtx?.user?.user.kerberos })
-      console.log(res.data)
+      await axios.post(`/api/project/${project.id}/applications`, { ...values, projectId: project.id, studentKerberos: authCtx?.user?.user.kerberos })
     }
     catch (error) {
       console.error('Form submission error', error)

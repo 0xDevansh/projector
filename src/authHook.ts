@@ -23,7 +23,9 @@ export async function getAuthUser(token?: string) {
     return extendedUser || null
   }
   catch (err: any) {
-    console.error(err)
+    // don't low jwt error as it spams the logs
+    if (err.message !== 'JWT secret not found in env')
+      console.error(err)
     return null
   }
 }
