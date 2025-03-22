@@ -61,18 +61,40 @@ export async function getExtendedUserByKerberos(kerberos: string): Promise<Exten
   }
 }
 
+const kerberosToDeptCode = {
+  am: 'am',
+  ch: 'chemical',
+  ce: 'civil',
+  cs: 'cse',
+  dd: 'design',
+  ee: 'ee',
+  ms: 'mse',
+  mt: 'maths',
+  me: 'mech',
+  ph: 'physics',
+  tt: 'textile',
+}
+
 export async function createOrUpdateUser(data: { email?: string, name?: string, type?: UserType, deptCode?: string }) {
   if (!data.email?.includes('@'))
     throw new Error('Invalid email')
+  const kerberos = data.email?.split('@')[0]
+
+  let dCode = data.deptCode
+  const kerberosStarter = kerberos.substring(0, 2)
+  if (!dCode && kerberosStarter in kerberosToDeptCode) {
+    dCode = kerberosToDeptCode[kerberosStarter as keyof typeof kerberosToDeptCode]
+  }
 
   await AppDataSource.createQueryBuilder()
     .insert()
     .into(User)
     .values([{
       ...data,
-      kerberos: data.email?.split('@')[0],
+      kerberos,
+      deptCode: dCode,
     }])
-    .orUpdate(['deptCode', 'type'], ['email'])
+    .orUpdate(['deptCode', 'type'], ['kerberos'])
     .execute()
 }
 
