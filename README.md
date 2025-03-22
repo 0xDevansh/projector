@@ -45,6 +45,8 @@ pnpm run deploy
 - [x] Allow students to view application
 #### v0.2.2 (Current)
 - [x] Add BTP and MTP as project type
+#### v0.2.3 (Current)
+- [x] Fixed a critical bug on onboarding
 #### Upcoming
 - [ ] Public profile options
 - [ ] Profile pages and onboarding for faculty
