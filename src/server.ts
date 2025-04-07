@@ -74,7 +74,7 @@ await server.register(cookie, {
 await server.register(fastifyStatic, {
   root: resolve(dirname(fileURLToPath(import.meta.url)), '../static'),
   prefix: '/static/',
-  wildcard: false,
+  wildcard: true,
   index: false,
 })
 server.decorateRequest('extendedUser', null)
