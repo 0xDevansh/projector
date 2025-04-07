@@ -17,7 +17,7 @@ import Onboarding from './pages/Onboarding.js'
 import Profile from './pages/Profile.js'
 import ProjectDetails from './pages/ProjectDetails.js'
 import Projects from './pages/Projects.js'
-import { FilteredProjects } from './components/FilteredProjects.js'
+// import { FilteredProjects } from './components/FilteredProjects.js'
 
 export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
   return (
@@ -37,7 +37,7 @@ export function createApp(isLoggedIn: boolean, user?: ExtendedUser) {
                   <Route path="onboarding" element={<Onboarding />} />
                   <Route path="projects" element={<Projects />} />
                   <Route path="projects/create" element={<CreateProject />} />
-                  <Route path="projects/filter" element={<FilteredProjects />} />
+                  {/* <Route path="projects/filter" element={<FilteredProjects />} /> */}
                   <Route path="project/:id" element={<ProjectDetails />} />
                   <Route path="project/:id/edit" element={<EditProject />} />
                   <Route path="project/:projectId/applications/:applicationId" element={<ApplicationDetails />} />
