@@ -68,7 +68,7 @@ export default function ProfProjects() {
 export function NoProjectsFound() {
   return (
     <p className="flex justify-center items-center py-10 text-md md:text-lg border-2 border-gray-300 rounded-xl text-muted-foreground mx-7 mt-4">
-      No Projects found
+      There are no open projects right now
     </p>
   )
 }

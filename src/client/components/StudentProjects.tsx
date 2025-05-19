@@ -24,7 +24,7 @@ export default function StudentProjects({ isLoggedIn }: { isLoggedIn?: boolean }
     lastApplyDate.setHours(0, 0, 0, 0)
     return lastApplyDate >= today
   }) as Project[]
-  projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
+  projects.sort((a, b) => a.createdAt > b.createdAt ? -1 : 1)
 
   if (!isLoggedIn) {
     return (
