@@ -167,27 +167,51 @@ export async function getProjects(filter: Partial<Static<typeof ProjectFilterTyp
   if (filter.applyDateNotPassed)
     qBuilder = qBuilder.andWhere(`lastApplyDate >= :now`, { now: new Date().toISOString() })
 
-  return (await qBuilder.getMany())
-    .filter((p) => {
-      const criteria: boolean[] = []
-      if (filter.projectType) {
-        const types = filter.projectType.split(',')
-        criteria.push(types.some(type => p.projectType.includes(type as ProjectType)))
-      }
-      if (filter.duration) {
-        const durations = filter.duration.split(',')
-        criteria.push(durations.some(dur => p.duration.includes(dur as ProjectDuration)))
-      }
-      if (filter.eligibleDegrees && p.eligibleDegrees) {
-        const eDegrees = filter.eligibleDegrees.split(',')
-        criteria.push(eDegrees.some(deg => p.eligibleDegrees.includes(deg as DegreeCode)))
-      }
-      if (filter.eligibleDepartments && p.eligibleDepartments) {
-        const eDepts = filter.eligibleDepartments.split(',')
-        criteria.push(eDepts.some(dept => p.eligibleDepartments.includes(dept as DeptCode)))
-      }
-      return criteria.every(c => c)
-    })
+  if (filter.projectType) {
+    const types = filter.projectType.split(',').map(t => t.trim()).filter(t => t.length > 0)
+    if (types.length > 0) {
+      const typeConditions = types.map((type, index) => `user.projectType LIKE :type_${index}`).join(' OR ')
+      qBuilder = qBuilder.andWhere(`(${typeConditions})`)
+      types.forEach((type, index) => {
+        qBuilder.setParameter(`type_${index}`, `%${type}%`)
+      })
+    }
+  }
+
+  if (filter.duration) {
+    const durations = filter.duration.split(',').map(d => d.trim()).filter(d => d.length > 0)
+    if (durations.length > 0) {
+      const durationConditions = durations.map((duration, index) => `user.duration LIKE :duration_${index}`).join(' OR ')
+      qBuilder = qBuilder.andWhere(`(${durationConditions})`)
+      durations.forEach((duration, index) => {
+        qBuilder.setParameter(`duration_${index}`, `%${duration}%`)
+      })
+    }
+  }
+
+  if (filter.eligibleDegrees) {
+    const degrees = filter.eligibleDegrees.split(',').map(deg => deg.trim()).filter(deg => deg.length > 0)
+    if (degrees.length > 0) {
+      const degreeConditions = degrees.map((degree, index) => `user.eligibleDegrees LIKE :degree_${index}`).join(' OR ')
+      qBuilder = qBuilder.andWhere(`(${degreeConditions})`)
+      degrees.forEach((degree, index) => {
+        qBuilder.setParameter(`degree_${index}`, `%${degree}%`)
+      })
+    }
+  }
+
+  if (filter.eligibleDepartments) {
+    const departments = filter.eligibleDepartments.split(',').map(dept => dept.trim()).filter(dept => dept.length > 0)
+    if (departments.length > 0) {
+      const departmentConditions = departments.map((department, index) => `user.eligibleDepartments LIKE :department_${index}`).join(' OR ')
+      qBuilder = qBuilder.andWhere(`(${departmentConditions})`)
+      departments.forEach((department, index) => {
+        qBuilder.setParameter(`department_${index}`, `%${department}%`)
+      })
+    }
+  }
+
+  return await qBuilder.getMany()
 }
 
 export async function addProject(project: Partial<ProjectTSType>) {
