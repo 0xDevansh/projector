@@ -60,7 +60,8 @@ export default function ProjectDetails() {
     return <NotFound />
   }
   else {
-    const project = data.data as Project
+    // need to convert date field to Date()
+    const project = { ...data.data, lastApplyDate: new Date(data.data.lastApplyDate) } as Project
     // const { apps, error, isLoading } = useSWR(`/api/project/${id}/applications`)
     // if project is not open, only prof can view it
     if (project.projectStatus !== 'open') {
@@ -253,6 +254,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
   else if (!error && data?.data) {
     applications = data.data as Application[]
   }
+  const acceptingResponses = project.projectStatus === 'open' && project.lastApplyDate >= new Date()
   if (!authCtx?.isLoggedIn) {
     // not logged in
     return (
@@ -271,6 +273,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
     )
   }
   else if (authCtx?.user?.user.type === 'student') {
+    // user is a student (show application form)
     if (!applications.length) {
       return (
         <Card>
@@ -286,6 +289,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
       )
     }
     else {
+      // user already applied
       const app = applications[0]
       return (
         <Card>
@@ -321,6 +325,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
       )
     }
     else {
+      // prof logged in and project not draft
       return (
         <Card>
           <CardHeader>
@@ -331,11 +336,20 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
               Status:
               <span className="font-normal">
                 {' '}
-                {project.projectStatus}
+                {new Date() > project.lastApplyDate ? 'Last application date exceeded' : project.projectStatus}
               </span>
             </h1>
-            {project.projectStatus === 'open' && <p>This project is accepting new applications</p>}
-            {project.projectStatus === 'closed' && <p>This project is not accepting new applications</p>}
+            {acceptingResponses
+              ? <p>This project is accepting new applications</p>
+              : (
+                  <p>
+                    This project is
+                    {' '}
+                    <b>not accepting</b>
+                    {' '}
+                    new applications
+                  </p>
+                )}
             <Link className={cn(buttonVariants({ variant: 'default' }), 'py-4')} to={`/app/project/${project.id}/edit`}>Edit Project details</Link>
             <Button
               onClick={onChangeStatus}
@@ -343,6 +357,7 @@ function SideBar({ authCtx, project, onMakePublic, onChangeStatus }: { authCtx: 
             >
               {project.projectStatus === 'open' ? 'Close Project' : 'Open for applications'}
             </Button>
+            {new Date() > project.lastApplyDate && <p>The last application date has passed, so this project is no longer visible to students. You can update the date to allow more applications.</p>}
 
           </CardContent>
         </Card>

@@ -9,7 +9,7 @@ import { Badge, BadgeWithTooltip } from './ui/badge.js'
 import { Button } from './ui/button.js'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card.js'
 
-export default function ProjectCard({ project, applied, profView, isLoggedIn }: { project: Project, applied?: boolean, profView?: boolean, isLoggedIn?: boolean }) {
+export default function ProjectCard({ project, applied, profView, isLoggedIn, isOwnProject }: { project: Project, applied?: boolean, profView?: boolean, isLoggedIn?: boolean, isOwnProject?: boolean }) {
   // check lastApplyDate
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -83,17 +83,13 @@ export default function ProjectCard({ project, applied, profView, isLoggedIn }: 
             <span>Applied</span>
           </div>
         )}
-        { isLoggedIn && !applied
-          ? (
-              <Link to={`/app/project/${project.id}`} className="w-full mt-2">
-                <Button className="w-full">Apply</Button>
-              </Link>
-            )
-          : (
-              <Link to={`/app/project/${project.id}`} className="w-full mt-2">
-                <Button className="w-full">View Details</Button>
-              </Link>
-            )}
+        <Link to={`/app/project/${project.id}`} className="w-full mt-2">
+          <Button className="w-full">
+            { isLoggedIn && !applied && !isOwnProject
+              ? 'Apply'
+              : isOwnProject ? 'Manage Project' : 'View Details'}
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   )
