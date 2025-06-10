@@ -100,6 +100,8 @@ export const ProjectTemplateSchema = z.object({
   }
 })
 
+export type ProjectTemplateType = z.infer<typeof ProjectTemplateSchema>
+
 // Export individual enums for use elsewhere if needed
 export { Duration, EligibleDegree, EligibleDepartment, ProjectType }
 
@@ -109,7 +111,18 @@ const formSchema = z.object({
   }, 'A YAML file is required'),
 })
 
-export default function ValidateYaml() {
+// Reusable YAML Validation Form Component
+interface YamlValidationFormProps {
+  onValidationSuccess?: (data: ProjectTemplateType) => void | Promise<void>
+  buttonText?: string
+  className?: string
+}
+
+export function YamlValidationForm({
+  onValidationSuccess,
+  buttonText = 'Validate YAML',
+  className = '',
+}: YamlValidationFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   })
@@ -204,10 +217,31 @@ export default function ValidateYaml() {
         })
       }
       else {
+        // Validation successful
+        console.log('Validated YAML data:', result.data)
+
+        if (onValidationSuccess) {
+          try {
+            await onValidationSuccess(result.data)
+          }
+          catch (error: any) {
+            setValidationResult({
+              success: false,
+              message: `Processing error: ${error.message}`,
+            })
+            return
+          }
+        }
+
         setValidationResult({
           success: true,
-          message: 'YAML file is valid! ✅',
+          message: onValidationSuccess
+            ? 'Project data validated and processed successfully! ✅'
+            : 'Project data is valid! ✅',
         })
+
+        // Reset form after successful validation
+        form.reset()
       }
     }
     catch (error: any) {
@@ -223,73 +257,74 @@ export default function ValidateYaml() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-6">Validate Project YAML file</h1>
+    <div className={className}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="yamlFile"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem>
+                <FormLabel>Project File</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".yaml,.yml"
+                    onChange={e => onChange(e.target.files)}
+                    {...rest}
+                  />
+                </FormControl>
+                <FormDescription>Upload your project YAML file (.yaml or .yml)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Validating...' : buttonText}
+          </Button>
+        </form>
+      </Form>
 
+      {/* Validation Results */}
+      {validationResult && (
+        <div className="mt-6">
+          <Alert className={validationResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+            <AlertDescription>
+              <div className={validationResult.success ? 'text-green-800' : 'text-red-800'}>
+                <div className="font-medium mb-2">{validationResult.message}</div>
+                {validationResult.errors && validationResult.errors.length > 0 && (
+                  <div className="mt-2">
+                    <div className="font-medium mb-1">Validation Errors:</div>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {validationResult.errors.map((error, index) => (
+                        <li key={index} className="text-sm">{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Main page component using the reusable form
+export default function ValidateYaml() {
+  return (
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-2xl font-semibold mb-6">Validate Project YAML</h1>
+      <title>Validate Project - Projects Portal</title>
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Upload YAML File</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="yamlFile"
-                render={({ field: { onChange, value, ...rest } }) => (
-                  <FormItem>
-                    <FormLabel>Project File</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept=".yaml,.yml"
-                        onChange={e => onChange(e.target.files)}
-                        {...rest}
-                      />
-                    </FormControl>
-                    <FormDescription>Upload your project YAML file (.yaml or .yml)</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Validating...' : 'Validate YAML'}
-              </Button>
-            </form>
-          </Form>
-
-          {/* Validation Results */}
-          {validationResult && (
-            <div className="mt-6">
-              <Alert className={validationResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
-                <AlertDescription>
-                  <div className={validationResult.success ? 'text-green-800' : 'text-red-800'}>
-                    <div className="font-medium mb-2">{validationResult.message}</div>
-                    {validationResult.errors && validationResult.errors.length > 0 && (
-                      <div className="mt-2">
-                        <div className="font-medium mb-1">Validation Errors:</div>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {validationResult.errors.map((error, index) => (
-                            <li key={index} className="text-sm">{error}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </AlertDescription>
-              </Alert>
-            </div>
-          )}
-
-          <div className="mt-6 p-3 bg-gray-50 rounded-md text-sm text-gray-600">
-            <p className="font-medium">Instructions:</p>
-            <ul className="mt-1 space-y-1 text-xs">
-              <li>• Select a .yaml or .yml file</li>
-              <li>• Click "Validate YAML" to check if the file matches the project template schema</li>
-              <li>• Validation results will appear below the form</li>
-              <li>• Successfully validated data will be logged to the browser console</li>
-            </ul>
-          </div>
+          <YamlValidationForm
+            buttonText="Validate"
+          />
         </CardContent>
       </Card>
     </div>

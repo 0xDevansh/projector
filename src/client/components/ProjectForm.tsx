@@ -4,8 +4,8 @@ import type { Project } from '../../models/ProfessorProject.js'
 import {
   zodResolver,
 } from '@hookform/resolvers/zod'
-import axios from 'axios'
 
+import axios from 'axios'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import React, { useContext } from 'react'
@@ -28,6 +28,7 @@ import {
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import usePersist from '../hooks/usePersist.js'
+import { type ProjectTemplateType, YamlValidationForm } from '../pages/ValidateYaml'
 import { cn } from '../utils.js'
 import { Button } from './ui/button.js'
 import { Calendar } from './ui/calendar.js'
@@ -152,14 +153,30 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
     }
   }
 
+  async function onYamlSubmit(projectData: ProjectTemplateType) {
+    const res = await axios.post('/api/project', { ...projectData, projectStatus: 'draft', profKerberos: authCtx?.user?.user.kerberos || '' }, { headers: { 'Content-Type': 'application/json' } })
+    if (res.status !== 200) {
+      toast({ title: 'Error', description: 'Unexpected error while submitting form' })
+    }
+    else {
+      const id = res.data.data
+      navigate(id ? `/app/project/${id}` : '/app/', { state: { toast: { code: 'projectCreated' }, action: 'clearStorage' } })
+    }
+  }
+
   return (
     <>
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Upload as JSON</CardTitle>
-          <CardDescription>You can upload the project details as a JSON files. This is to help delegate specifying the project details.</CardDescription>
-        </CardHeader>
-      </Card>
+      {formAction === 'create' && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Upload as YAML</CardTitle>
+            <CardDescription className="font-medium">You can upload the project details as a YAML file. This is to help delegate specifying the project details.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <YamlValidationForm buttonText="Add Project" onValidationSuccess={onYamlSubmit} />
+          </CardContent>
+        </Card>
+      )}
       <Card>
         <CardContent>
           <Form {...form}>
