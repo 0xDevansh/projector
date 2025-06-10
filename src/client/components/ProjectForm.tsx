@@ -1,49 +1,39 @@
 'use client'
 
 import type { Project } from '../../models/ProfessorProject.js'
-import type { DegreeCode, ProjectDuration, ProjectType } from '../../types.js'
 import {
   zodResolver,
 } from '@hookform/resolvers/zod'
 import axios from 'axios'
-import {
-  format,
-} from 'date-fns'
-import {
-  Calendar as CalendarIcon,
-} from 'lucide-react'
+
+import { format } from 'date-fns'
+import { Calendar as CalendarIcon } from 'lucide-react'
 import React, { useContext } from 'react'
 import {
   useForm,
 } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as z from 'zod'
-import { centreNames, degreeName, deptNames, projectDuration, projectType, schoolNames } from '../../types.js'
+import {
+  centreNames,
+  type DegreeCode,
+  degreeName,
+  deptNames,
+  type ProjectDuration,
+  projectDuration,
+  type ProjectType,
+  projectType,
+  schoolNames,
+} from '../../types.js'
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import usePersist from '../hooks/usePersist.js'
-import {
-  cn,
-} from '../utils.js'
-
-import {
-  Button,
-} from './ui/button.js'
-import {
-  Calendar,
-} from './ui/calendar.js'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './ui/form.js'
-import {
-  Input,
-} from './ui/input.js'
+import { cn } from '../utils.js'
+import { Button } from './ui/button.js'
+import { Calendar } from './ui/calendar.js'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.js'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form.js'
+import { Input } from './ui/input.js'
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -52,15 +42,9 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from './ui/multi-select.js'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './ui/popover.js'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover.js'
 import { RadioGroup, RadioGroupItem } from './ui/radio-group.js'
-import {
-  Textarea,
-} from './ui/textarea.js'
+import { Textarea } from './ui/textarea.js'
 
 const formSchema = z.object({
   title: z.string(),
@@ -169,460 +153,473 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mx-auto">
-        <h1 className="text-xl font-semibold">Basic details</h1>
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Project Title</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Title"
-                  type="text"
-                  {...field}
-                />
-              </FormControl>
+    <>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">Upload as JSON</CardTitle>
+          <CardDescription>You can upload the project details as a JSON files. This is to help delegate specifying the project details.</CardDescription>
+        </CardHeader>
+      </Card>
+      <Card>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mx-auto">
+              <h1 className="text-lg font-semibold mt-4">Basic details</h1>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Project Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Title"
+                        type="text"
+                        {...field}
+                      />
+                    </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder=""
-                  className="resize-y"
-                  {...field}
-                />
-              </FormControl>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder=""
+                        className="resize-y"
+                        {...field}
+                      />
+                    </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="vacancy"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Vacancy</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>Number of students that will be selected (Optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="vacancy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Vacancy</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder=""
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>Number of students that will be selected (Optional)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <div className="grid grid-cols-12 gap-4">
+              <div className="grid grid-cols-12 gap-4">
 
-          <div className="col-span-6">
+                <div className="col-span-6">
 
-            <FormField
-              control={form.control}
-              name="projectType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Project Type</FormLabel>
-                  <FormControl>
-                    <MultiSelector
-                      values={field.value as any}
-                      onValuesChange={field.onChange}
-                      loop
-                      className="max-w-xs"
-                    >
-                      <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select project type" />
-                      </MultiSelectorTrigger>
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
-                          {
-                            Object.keys(projectType).map(type => (
-                              <MultiSelectorItem
-                                key={type}
-                                value={type}
-                              >
-                                {projectType[type as ProjectType]}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    </MultiSelector>
-                  </FormControl>
-                  <FormDescription>The type of project</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-
-            <FormField
-              control={form.control}
-              name="duration"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Duration type</FormLabel>
-                  <FormControl>
-                    <MultiSelector
-                      values={field.value as any}
-                      onValuesChange={field.onChange}
-                      loop
-                      className="max-w-xs"
-                    >
-                      <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select duration" />
-                      </MultiSelectorTrigger>
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
-                          {
-                            Object.keys(projectDuration).map(duration => (
-                              <MultiSelectorItem
-                                key={duration}
-                                value={duration}
-                              >
-                                {projectDuration[duration as ProjectDuration]}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    </MultiSelector>
-                  </FormControl>
-                  <FormDescription>The duration type</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-        </div>
-
-        <FormField
-          control={form.control}
-          name="lastApplyDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel required>Last application date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground',
-                      )}
-                    >
-                      {field.value
-                        ? (
-                            format(field.value, 'PPP')
-                          )
-                        : (
-                            <span>Pick a date</span>
-                          )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
+                  <FormField
+                    control={form.control}
+                    name="projectType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Project Type</FormLabel>
+                        <FormControl>
+                          <MultiSelector
+                            values={field.value as any}
+                            onValuesChange={field.onChange}
+                            loop
+                            className="max-w-xs"
+                          >
+                            <MultiSelectorTrigger>
+                              <MultiSelectorInput placeholder="Select project type" />
+                            </MultiSelectorTrigger>
+                            <MultiSelectorContent>
+                              <MultiSelectorList>
+                                {
+                                  Object.keys(projectType).map(type => (
+                                    <MultiSelectorItem
+                                      key={type}
+                                      value={type}
+                                    >
+                                      {projectType[type as ProjectType]}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                              </MultiSelectorList>
+                            </MultiSelectorContent>
+                          </MultiSelector>
+                        </FormControl>
+                        <FormDescription>The type of project</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </PopoverContent>
-              </Popover>
-              <FormDescription>The last date to apply for this project</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="stipendProvided"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel required>Stipend Provided</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="yes" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Yes
-                    </FormLabel>
+                </div>
+
+                <div className="col-span-6">
+
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Duration type</FormLabel>
+                        <FormControl>
+                          <MultiSelector
+                            values={field.value as any}
+                            onValuesChange={field.onChange}
+                            loop
+                            className="max-w-xs"
+                          >
+                            <MultiSelectorTrigger>
+                              <MultiSelectorInput placeholder="Select duration" />
+                            </MultiSelectorTrigger>
+                            <MultiSelectorContent>
+                              <MultiSelectorList>
+                                {
+                                  Object.keys(projectDuration).map(duration => (
+                                    <MultiSelectorItem
+                                      key={duration}
+                                      value={duration}
+                                    >
+                                      {projectDuration[duration as ProjectDuration]}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                              </MultiSelectorList>
+                            </MultiSelectorContent>
+                          </MultiSelector>
+                        </FormControl>
+                        <FormDescription>The duration type</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+              </div>
+
+              <FormField
+                control={form.control}
+                name="lastApplyDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel required>Last application date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
+                            )}
+                          >
+                            {field.value
+                              ? (
+                                  format(field.value, 'PPP')
+                                )
+                              : (
+                                  <span>Pick a date</span>
+                                )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>The last date to apply for this project</FormDescription>
+                    <FormMessage />
                   </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="stipendProvided"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel required>Stipend Provided</FormLabel>
                     <FormControl>
-                      <RadioGroupItem value="no" />
+                      <RadioGroup
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="yes" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Yes
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="no" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            No
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
-                    <FormLabel className="font-normal">
-                      No
-                    </FormLabel>
+                    <FormMessage />
                   </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="stipendAmount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Stipend Amount (in ₹)</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
+              <FormField
+                control={form.control}
+                name="stipendAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stipend Amount (in ₹)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder=""
 
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The amount of stipend provided, if you answered Yes to the previous question</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <h1 className="text-xl font-semibold">Eligibility criteria</h1>
-        <p className="text-muted-foreground mt-0">Leaving a field blank assumes no restriction for that field</p>
-        <FormField
-          control={form.control}
-          name="minYear"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Minimum Year</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The minimum year of study a student must be in to apply (optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>The amount of stipend provided, if you answered Yes to the previous question</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <hr />
+              <h1 className="text-lg font-semibold">Eligibility criteria</h1>
+              <p className="text-muted-foreground mt-0">Leaving a field blank assumes no restriction for that field</p>
+              <FormField
+                control={form.control}
+                name="minYear"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Year</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder=""
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>The minimum year of study a student must be in to apply (optional)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="minCgpa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Minimum CGPA</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
+              <FormField
+                control={form.control}
+                name="minCgpa"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum CGPA</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder=""
 
-                  type="text"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The minimum CGPA required to apply for this project (optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                        type="text"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>The minimum CGPA required to apply for this project (optional)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <div className="grid grid-cols-12 gap-4">
+              <div className="grid grid-cols-12 gap-4">
 
-          <div className="col-span-6">
+                <div className="col-span-6">
 
-            <FormField
-              control={form.control}
-              name="eligibleDegrees"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Eligible Degrees</FormLabel>
-                  <FormControl>
-                    <MultiSelector
-                      values={field.value as any}
-                      onValuesChange={field.onChange}
-                      loop
-                      className="max-w-xs"
-                    >
-                      <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select" />
-                      </MultiSelectorTrigger>
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
-                          {
-                            Object.keys(degreeName).map(degree => (
-                              <MultiSelectorItem
-                                key={degree}
-                                value={degree}
-                              >
-                                {degreeName[degree as DegreeCode]}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    </MultiSelector>
-                  </FormControl>
-                  <FormDescription>The eligible degree students who can apply (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                  <FormField
+                    control={form.control}
+                    name="eligibleDegrees"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Eligible Degrees</FormLabel>
+                        <FormControl>
+                          <MultiSelector
+                            values={field.value as any}
+                            onValuesChange={field.onChange}
+                            loop
+                            className="max-w-xs"
+                          >
+                            <MultiSelectorTrigger>
+                              <MultiSelectorInput placeholder="Select" />
+                            </MultiSelectorTrigger>
+                            <MultiSelectorContent>
+                              <MultiSelectorList>
+                                {
+                                  Object.keys(degreeName).map(degree => (
+                                    <MultiSelectorItem
+                                      key={degree}
+                                      value={degree}
+                                    >
+                                      {degreeName[degree as DegreeCode]}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                              </MultiSelectorList>
+                            </MultiSelectorContent>
+                          </MultiSelector>
+                        </FormControl>
+                        <FormDescription>The eligible degree students who can apply (optional)</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-          <div className="col-span-6">
+                <div className="col-span-6">
 
-            <FormField
-              control={form.control}
-              name="eligibleDepartments"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Eligible Departments</FormLabel>
-                  <FormControl>
-                    <MultiSelector
-                      values={field.value as any}
-                      onValuesChange={field.onChange}
-                      loop
-                      className="max-w-xs"
-                    >
-                      <MultiSelectorTrigger>
-                        <MultiSelectorInput placeholder="Select" />
-                      </MultiSelectorTrigger>
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
-                          <span className="font-semibold">Department</span>
-                          {
-                            Object.entries(deptNames).map(([dCode, dName]) => (
-                              <MultiSelectorItem
-                                key={dCode}
-                                value={dCode}
-                              >
-                                {dName}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                          <span className="font-semibold">Centre</span>
-                          {
-                            Object.entries(centreNames).map(([dCode, dName]) => (
-                              <MultiSelectorItem
-                                key={dCode}
-                                value={dCode}
-                              >
-                                {dName}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                          <span className="font-semibold">School</span>
-                          {
-                            Object.entries(schoolNames).map(([dCode, dName]) => (
-                              <MultiSelectorItem
-                                key={dCode}
-                                value={dCode}
-                              >
-                                {dName}
-                              </MultiSelectorItem>
-                            ))
-                          }
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    </MultiSelector>
-                  </FormControl>
-                  <FormDescription>The departments eligible (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                  <FormField
+                    control={form.control}
+                    name="eligibleDepartments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Eligible Departments</FormLabel>
+                        <FormControl>
+                          <MultiSelector
+                            values={field.value as any}
+                            onValuesChange={field.onChange}
+                            loop
+                            className="max-w-xs"
+                          >
+                            <MultiSelectorTrigger>
+                              <MultiSelectorInput placeholder="Select" />
+                            </MultiSelectorTrigger>
+                            <MultiSelectorContent>
+                              <MultiSelectorList>
+                                <span className="font-semibold">Department</span>
+                                {
+                                  Object.entries(deptNames).map(([dCode, dName]) => (
+                                    <MultiSelectorItem
+                                      key={dCode}
+                                      value={dCode}
+                                    >
+                                      {dName}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                                <span className="font-semibold">Centre</span>
+                                {
+                                  Object.entries(centreNames).map(([dCode, dName]) => (
+                                    <MultiSelectorItem
+                                      key={dCode}
+                                      value={dCode}
+                                    >
+                                      {dName}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                                <span className="font-semibold">School</span>
+                                {
+                                  Object.entries(schoolNames).map(([dCode, dName]) => (
+                                    <MultiSelectorItem
+                                      key={dCode}
+                                      value={dCode}
+                                    >
+                                      {dName}
+                                    </MultiSelectorItem>
+                                  ))
+                                }
+                              </MultiSelectorList>
+                            </MultiSelectorContent>
+                          </MultiSelector>
+                        </FormControl>
+                        <FormDescription>The departments eligible (optional)</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-        </div>
+              </div>
 
-        <FormField
-          control={form.control}
-          name="prerequisites"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Prerequisites </FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder=""
-                  className="resize-y"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The prerequisited for student selection (optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="prerequisites"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prerequisites </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder=""
+                        className="resize-y"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>The prerequisited for student selection (optional)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <hr />
+              <h1 className="text-lg font-semibold">Additional information</h1>
 
-        <h1 className="text-xl font-semibold">Additional information</h1>
+              <FormField
+                control={form.control}
+                name="selectionProcedure"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selection Procedure</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder=""
+                        className="resize-y"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The procedure followed to select final students from the applicants
+                      (optional)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="selectionProcedure"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Selection Procedure</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder=""
-                  className="resize-y"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                The procedure followed to select final students from the applicants
-                (optional)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="learningOutcomes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Learning Outcomes</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder=""
-                  className="resize-y"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>What the students can expect to learn from this project (optional)</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+              <FormField
+                control={form.control}
+                name="learningOutcomes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Learning Outcomes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder=""
+                        className="resize-y"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>What the students can expect to learn from this project (optional)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   )
 }

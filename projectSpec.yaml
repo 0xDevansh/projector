@@ -1,0 +1,93 @@
+# This is a project template. Only professors can upload this as a project on the portal
+# The data can be validated at https://projects.apps.iitd.ac.in/app/validate-yaml before uploading
+
+# === BASIC DETAILS ===
+title: "Placeholder project title"
+
+description: |
+  Placeholder project description
+  This can span multiple lines but keep it indented properly.
+
+prerequisites: |
+  Placeholder project pre-requisites
+  This can span multiple lines but keep it indented properly.
+
+learningOutcomes: |
+  Placeholder learning outcomes
+  This can span multiple lines but keep it indented properly.
+
+selectionProcedure: |
+  Placeholder selection procedure (brief description)
+  This can span multiple lines but keep it indented properly.
+
+projectType:
+# (Required) The type of project. Below are all possible options, delete the ones not needed.
+  - disa    # Design and Innovation Summer Award
+  - sura    # Summer Undergraduate Research Award
+  - btp     # BTech project
+  - mtp     # MTech project
+  - design
+  - major
+  - minor
+
+duration:
+# (Required) The expected duration of the project. Below are all possible options, delete the ones not needed.
+  - summer
+  - winter
+  - semester
+  - year
+  - short # short term
+  - long  # long term
+  - other
+
+lastApplyDate: "2025-12-25"
+# (Required) Last date to apply for this project. It will be hidden on the portal once it passes.
+# Format: YYYY-MM-YYYY
+
+vacancy: 1
+# (Required) Number of students required
+
+stipendProvided: true
+# Whether stipend is provided
+
+stipendAmount: 1
+# If above is true, the stipend amount
+
+# === ELIGIBILITY CRITERIA ===
+# Below fields are optional. Deleting the field assumes no restriction
+
+minCgpa: "7.00"
+# Please ensure exactly 2 decimal digits
+
+eligibleDegrees:
+# The eligible degree(s). Below are all possible options, delete the ones not needed.
+  - btech
+  - mtech
+  - dual
+  - phd
+  - msc
+  - msr
+  - bdes
+  - mdes
+
+eligibleDepartments:
+# Eligible departments. Below are all possible options, delete the ones not needed.
+# These are department codes, the corresponding department can be found by visiting {code}.iitd.ac.in
+  - am
+  - beb
+  - chemical
+  - chemistry
+  - civil
+  - cse
+  - design
+  - ee
+  - dese
+  - hss
+  - mse
+  - maths
+  - mech
+  - physics
+  - textile
+
+minYear: 1
+# Minimum year of study of the student
