@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { parse } from 'yaml'
 import { z } from 'zod'
 import { Alert, AlertDescription } from '../components/ui/alert.js'
-import { Button } from '../components/ui/button.js'
+import { Button, buttonVariants } from '../components/ui/button.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.js'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form.js'
 import { Input } from '../components/ui/input.js'
@@ -217,9 +217,6 @@ export function YamlValidationForm({
         })
       }
       else {
-        // Validation successful
-        console.log('Validated YAML data:', result.data)
-
         if (onValidationSuccess) {
           try {
             await onValidationSuccess(result.data)
@@ -279,9 +276,12 @@ export function YamlValidationForm({
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Validating...' : buttonText}
-          </Button>
+          <div className="flex flex-row gap-4">
+            <a href="/static/projectSpec.yaml" download className={buttonVariants({ variant: 'outline' })}>Download Template</a>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Validating...' : buttonText}
+            </Button>
+          </div>
         </form>
       </Form>
 

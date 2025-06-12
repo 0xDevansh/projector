@@ -28,7 +28,7 @@ import {
 import { AuthContext } from '../AuthContext.js'
 import { useToast } from '../hooks/use-toast.js'
 import usePersist from '../hooks/usePersist.js'
-import { type ProjectTemplateType, YamlValidationForm } from '../pages/ValidateYaml'
+import { type ProjectTemplateType, YamlValidationForm } from '../pages/ValidateYaml.js'
 import { cn } from '../utils.js'
 import { Button } from './ui/button.js'
 import { Calendar } from './ui/calendar.js'
@@ -169,19 +169,20 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
       {formAction === 'create' && (
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Upload as YAML</CardTitle>
-            <CardDescription className="font-medium">You can upload the project details as a YAML file. This is to help delegate specifying the project details.</CardDescription>
+            <CardTitle className="text-lg font-semibold">Option 1: Upload as YAML</CardTitle>
+            <CardDescription className="font-medium">You can upload the project details as a YAML file. This is to help delegate project specification to others.</CardDescription>
           </CardHeader>
           <CardContent>
-            <YamlValidationForm buttonText="Add Project" onValidationSuccess={onYamlSubmit} />
+            <YamlValidationForm buttonText="Upload" onValidationSuccess={onYamlSubmit} />
           </CardContent>
         </Card>
       )}
       <Card>
         <CardContent>
+          <h1 className="text-lg font-semibold mt-4">Option 2: Fill this form</h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mx-auto">
-              <h1 className="text-lg font-semibold mt-4">Basic details</h1>
+              <h1 className="text-md font-semibold mt-4">Basic details</h1>
               <FormField
                 control={form.control}
                 name="title"
@@ -421,7 +422,7 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
                 )}
               />
               <hr />
-              <h1 className="text-lg font-semibold">Eligibility criteria</h1>
+              <h1 className="text-md font-semibold">Eligibility criteria</h1>
               <p className="text-muted-foreground mt-0">Leaving a field blank assumes no restriction for that field</p>
               <FormField
                 control={form.control}
@@ -590,7 +591,7 @@ export default function ProjectForm({ formAction, project }: { formAction: 'crea
                 )}
               />
               <hr />
-              <h1 className="text-lg font-semibold">Additional information</h1>
+              <h1 className="text-md font-semibold">Additional information</h1>
 
               <FormField
                 control={form.control}
