@@ -19,11 +19,17 @@ export default function ProfProjects() {
   else if (projectsCall.error || myProjectsCall.error || !projectsCall.data?.data || !myProjectsCall.data?.data) {
     return <h1 className="text-lg">There was an error loading the projects...</h1>
   }
-  const projects = projectsCall.data.data as Project[]
-  const myProjects = myProjectsCall.data.data as Project[]
+  const projects = projectsCall.data.data.map((p: Project) => {
+    return { ...p, lastApplyDate: new Date(p.lastApplyDate) } as Project
+  }) as Project[]
+
+  const myProjects = myProjectsCall.data.data.map((p: Project) => {
+    return { ...p, lastApplyDate: new Date(p.lastApplyDate) } as Project
+  }) as Project[]
+
   projects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
   myProjects.sort((a, b) => a.lastApplyDate > b.lastApplyDate ? -1 : 1)
-  const otherProjects = projects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos)
+  const otherProjects = projects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos && new Date() <= p.lastApplyDate)
 
   return (
     <div>
@@ -46,6 +52,7 @@ export default function ProfProjects() {
               project={proj}
               key={proj.id}
               profView
+              isOwnProject
             />
           ))}
         </div>
@@ -53,7 +60,7 @@ export default function ProfProjects() {
       <h2 className="mb-2 mt-6 h3 md:h2">Other open projects</h2>
       {otherProjects.length === 0 && <NoProjectsFound />}
       <div className="projects grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-7">
-        {otherProjects.filter(p => p.profKerberos !== authCtx?.user?.user.kerberos).map((proj: Project) => (
+        {otherProjects.map((proj: Project) => (
           <ProjectCard
             project={proj}
             key={proj.id}
@@ -68,7 +75,7 @@ export default function ProfProjects() {
 export function NoProjectsFound() {
   return (
     <p className="flex justify-center items-center py-10 text-md md:text-lg border-2 border-gray-300 rounded-xl text-muted-foreground mx-7 mt-4">
-      No Projects found
+      There are no open projects right now
     </p>
   )
 }

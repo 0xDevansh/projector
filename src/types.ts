@@ -16,23 +16,7 @@ export const degreeName = {
   mdes: 'MDes',
 }
 export type DegreeCode = keyof typeof degreeName
-// export const deptName = {
-//   am: 'Applied Mechanics',
-//   beb: 'Biochemical Engineering and Biotechnology',
-//   chemical: 'Chemical Engineering',
-//   chemistry: 'Chemistry',
-//   civil: 'Civil Engineering',
-//   cse: 'Computer Science and Engineering',
-//   design: 'Design',
-//   ee: 'Electrical Engineering',
-//   dese: 'Energy Science and Engineering',
-//   hss: 'Humanities and Social Sciences',
-//   mse: 'Materials Science and Engineering',
-//   maths: 'Mathematics',
-//   mech: 'Mechanical Engineering',
-//   physics: 'Physics',
-//   textile: 'Textile and Fibre Engineering',
-// }
+
 export const deptData = {
   // departments
   am: { name: 'Applied Mechanics', type: 'department' },

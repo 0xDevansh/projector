@@ -26,7 +26,7 @@ export function EditProject() {
   else if (error || !data?.data) {
     return <NotFound />
   }
-  const project = data.data as Project
+  const project = { ...data.data, lastApplyDate: new Date(data.data.lastApplyDate) } as Project
 
   return (
     <div className="home p-10">
